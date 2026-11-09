@@ -58,6 +58,17 @@
             color: white !important;
             letter-spacing: 1px;
             text-decoration: none;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px;
+        }
+
+        .navbar-brand img.nav-logo-custom {
+            height: 48px !important;
+            width: auto !important;
+            object-fit: contain;
+            mix-blend-mode: lighten;
+            filter: brightness(1.2) drop-shadow(0 0 10px rgba(7, 140, 255, 0.6));
         }
 
         .navbar-brand span {
@@ -468,9 +479,9 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-            <img src="banner4.png" alt="OPTIWISE" style="height: 42px; width: auto; object-fit: contain; mix-blend-mode: lighten; filter: drop-shadow(0 0 8px rgba(7,140,255,0.4));">
-            <span>OPTI<span>WISE</span></span>
+        <a class="navbar-brand" href="#">
+            <img src="banner4.png" alt="OPTIWISE" class="nav-logo-custom">
+            <div>OPTI<span>WISE</span></div>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -617,7 +628,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="service-card">
                     <div class="service-icon"><i class="fas fa-globe"></i></div>
-                    <h4 data-key="serv_2_title">المواقع الإلكترونية</h4>
+                    <h4 data-key="serv_2_title">الم مواقع الإلكترونية</h4>
                     <p data-key="serv_2_desc">تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.</p>
                 </div>
             </div>
@@ -785,7 +796,7 @@
             serv_subheading: "نقدم مجموعة من الحلول والخدمات التقنية لتطوير أعمالك",
             serv_1_title: "تطوير البرمجيات",
             serv_1_desc: "تطوير الأنظمة والبرمجيات المخصصة وفق احتياجات ومتطلبات الأعمال.",
-            serv_2_title: "المواقع الإلكترونية",
+            serv_2_title: "الم مواقع الإلكترونية",
             serv_2_desc: "تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.",
             serv_3_title: "تطبيقات الجوال",
             serv_3_desc: "تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
