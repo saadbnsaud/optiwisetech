@@ -44,31 +44,32 @@
             scroll-behavior: smooth;
         }
 
-        /* Navbar التعديل الخاص بالشعار والنصوص */
+        /* Navbar التنسيق الجديد للشعار */
         .navbar {
             background: rgba(7, 17, 31, 0.95);
             backdrop-filter: blur(15px);
-            padding: 15px 0;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .navbar-brand {
-            font-size: 24px;
-            font-weight: 900;
-            color: white !important;
-            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
             text-decoration: none;
+            padding: 0;
         }
 
-        .navbar-brand img {
-            height: 38px;
+        .navbar-brand .nav-logo-img {
+            height: 55px; /* حجم مكبر وبارز للشعار يمين الصفحة */
             width: auto;
             object-fit: contain;
-            filter: drop-shadow(0 0 8px rgba(7, 140, 255, 0.4));
+            mix-blend-mode: lighten;
+            filter: brightness(1.1) drop-shadow(0 0 10px rgba(7, 140, 255, 0.5));
+            transition: transform 0.3s ease;
         }
 
-        .navbar-brand span {
-            color: var(--primary);
+        .navbar-brand .nav-logo-img:hover {
+            transform: scale(1.04);
         }
 
         .navbar-nav .nav-link {
@@ -168,7 +169,7 @@
             margin-bottom: 35px;
         }
 
-        /* إصلاح إطار صورة الـ Hero لعدم قطع الشعار */
+        /* إطار صورة الـ Hero */
         .hero-image {
             position: relative;
             z-index: 2;
@@ -186,11 +187,12 @@
         .hero-image img {
             width: 100%;
             height: auto;
-            max-height: 320px; /* زيادة الارتفاع لإظهار الشعار كاملاً بدون قص */
+            max-height: 300px;
             object-fit: contain;
             display: block;
             margin: 0 auto;
             background: transparent !important;
+            mix-blend-mode: lighten;
             filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
         }
 
@@ -474,9 +476,8 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-            <img src="banner4.png" alt="OPTIWISE Logo">
-            <span>OPTI<span>WISE</span></span>
+        <a class="navbar-brand" href="#">
+            <img src="banner4.png" alt="OPTIWISE" class="nav-logo-img">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -631,7 +632,7 @@
                 <div class="service-card">
                     <div class="service-icon"><i class="fas fa-mobile-screen"></i></div>
                     <h4 data-key="serv_3_title">تطبيقات الجوال</h4>
-                    <p data-key="serv_3_desc">تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهولة.</p>
+                    <p data-key="serv_3_desc">تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -684,7 +685,7 @@
                         <i class="fas fa-envelope"></i>
                         <div>
                             <p data-key="contact_email_label">البريد الإلكتروني</p>
-                            <h6>contact@optiwisetech.com</h6>
+                            <h6>saadbnsaud99@gmail.com</h6>
                         </div>
                     </div>
                     <div class="contact-item">
