@@ -44,7 +44,7 @@
             scroll-behavior: smooth;
         }
 
-        /* Navbar التنسيق الجديد للشعار */
+        /* Navbar */
         .navbar {
             background: rgba(7, 17, 31, 0.95);
             backdrop-filter: blur(15px);
@@ -53,23 +53,15 @@
         }
 
         .navbar-brand {
-            display: flex;
-            align-items: center;
+            font-size: 24px;
+            font-weight: 900;
+            color: white !important;
+            letter-spacing: 1px;
             text-decoration: none;
-            padding: 0;
         }
 
-        .navbar-brand .nav-logo-img {
-            height: 55px; /* حجم مكبر وبارز للشعار يمين الصفحة */
-            width: auto;
-            object-fit: contain;
-            mix-blend-mode: lighten;
-            filter: brightness(1.1) drop-shadow(0 0 10px rgba(7, 140, 255, 0.5));
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand .nav-logo-img:hover {
-            transform: scale(1.04);
+        .navbar-brand span {
+            color: var(--primary);
         }
 
         .navbar-nav .nav-link {
@@ -476,8 +468,9 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="banner4.png" alt="OPTIWISE" class="nav-logo-img">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <img src="banner4.png" alt="OPTIWISE" style="height: 42px; width: auto; object-fit: contain; mix-blend-mode: lighten; filter: drop-shadow(0 0 8px rgba(7,140,255,0.4));">
+            <span>OPTI<span>WISE</span></span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -624,7 +617,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="service-card">
                     <div class="service-icon"><i class="fas fa-globe"></i></div>
-                    <h4 data-key="serv_2_title">الم مواقع الإلكترونية</h4>
+                    <h4 data-key="serv_2_title">المواقع الإلكترونية</h4>
                     <p data-key="serv_2_desc">تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.</p>
                 </div>
             </div>
