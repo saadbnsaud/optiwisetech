@@ -48,42 +48,22 @@
         .navbar {
             background: rgba(7, 17, 31, 0.95);
             backdrop-filter: blur(15px);
-            padding: 14px 0;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .navbar-brand {
-            font-size: 26px;
-            font-weight: 900;
-            color: white !important;
-            letter-spacing: 1px;
-            text-decoration: none;
-            display: inline-flex !important;
+            display: flex !important;
             align-items: center !important;
+            padding: 0 !important;
         }
 
-        .navbar-brand .logo-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-inline-end: 10px;
-        }
-
-        .navbar-brand img.nav-logo-custom {
-            height: 120px !important; /* تكبير الأيقونة من داخل الصورة */
+        .navbar-brand img {
+            height: 48px !important; /* ارتفاع مثالي وواضحة جداً */
             width: auto !important;
-            max-width: none !important;
             object-fit: contain;
             mix-blend-mode: lighten;
-            transform: scale(1.8); /* تكبير الأيقونة لتملأ المساحة بوضوح */
-            filter: brightness(1.2) drop-shadow(0 0 10px rgba(7, 140, 255, 0.6));
-        }
-
-        .navbar-brand span {
-            color: var(--primary);
+            filter: brightness(1.2) drop-shadow(0 0 8px rgba(7, 140, 255, 0.5));
         }
 
         .navbar-nav .nav-link {
@@ -491,10 +471,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
         <a class="navbar-brand" href="#">
-            <div class="logo-icon-wrapper">
-                <img src="banner4.png" alt="OPTIWISE Logo" class="nav-logo-custom">
-            </div>
-            OPTI<span>WISE</span>
+            <img src="banner4.png" alt="OPTIWISE Tech Solutions">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -812,7 +789,7 @@
             serv_2_title: "المواقع الإلكترونية",
             serv_2_desc: "تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.",
             serv_3_title: "تطبيقات الجوال",
-            serv_3_desc: "تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
+            serv_3_desc: "تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
             serv_4_title: "الأنظمة الإدارية",
             serv_4_desc: "حلول لإدارة العمليات والموارد وتحسين كفاءة العمل.",
             serv_5_title: "الحلول السحابية",
