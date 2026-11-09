@@ -44,26 +44,31 @@
             scroll-behavior: smooth;
         }
 
-        /* Navbar */
+        /* Navbar التعديل الخاص بالشعار والنصوص */
         .navbar {
             background: rgba(7, 17, 31, 0.95);
             backdrop-filter: blur(15px);
-            padding: 12px 0;
+            padding: 15px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .navbar-brand {
-            display: flex !important;
-            align-items: center !important;
-            padding: 0 !important;
+            font-size: 24px;
+            font-weight: 900;
+            color: white !important;
+            letter-spacing: 1px;
+            text-decoration: none;
         }
 
         .navbar-brand img {
-            height: 48px !important; /* ارتفاع مثالي وواضحة جداً */
-            width: auto !important;
+            height: 38px;
+            width: auto;
             object-fit: contain;
-            mix-blend-mode: lighten;
-            filter: brightness(1.2) drop-shadow(0 0 8px rgba(7, 140, 255, 0.5));
+            filter: drop-shadow(0 0 8px rgba(7, 140, 255, 0.4));
+        }
+
+        .navbar-brand span {
+            color: var(--primary);
         }
 
         .navbar-nav .nav-link {
@@ -163,7 +168,7 @@
             margin-bottom: 35px;
         }
 
-        /* إطار صورة الـ Hero */
+        /* إصلاح إطار صورة الـ Hero لعدم قطع الشعار */
         .hero-image {
             position: relative;
             z-index: 2;
@@ -181,12 +186,11 @@
         .hero-image img {
             width: 100%;
             height: auto;
-            max-height: 300px;
+            max-height: 320px; /* زيادة الارتفاع لإظهار الشعار كاملاً بدون قص */
             object-fit: contain;
             display: block;
             margin: 0 auto;
             background: transparent !important;
-            mix-blend-mode: lighten;
             filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
         }
 
@@ -470,8 +474,9 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="banner4.png" alt="OPTIWISE Tech Solutions">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <img src="banner4.png" alt="OPTIWISE Logo">
+            <span>OPTI<span>WISE</span></span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -618,7 +623,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="service-card">
                     <div class="service-icon"><i class="fas fa-globe"></i></div>
-                    <h4 data-key="serv_2_title">المواقع الإلكترونية</h4>
+                    <h4 data-key="serv_2_title">الم مواقع الإلكترونية</h4>
                     <p data-key="serv_2_desc">تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.</p>
                 </div>
             </div>
@@ -626,7 +631,7 @@
                 <div class="service-card">
                     <div class="service-icon"><i class="fas fa-mobile-screen"></i></div>
                     <h4 data-key="serv_3_title">تطبيقات الجوال</h4>
-                    <p data-key="serv_3_desc">تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.</p>
+                    <p data-key="serv_3_desc">تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهولة.</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -789,7 +794,7 @@
             serv_2_title: "المواقع الإلكترونية",
             serv_2_desc: "تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.",
             serv_3_title: "تطبيقات الجوال",
-            serv_3_desc: "تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
+            serv_3_desc: "تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
             serv_4_title: "الأنظمة الإدارية",
             serv_4_desc: "حلول لإدارة العمليات والموارد وتحسين كفاءة العمل.",
             serv_5_title: "الحلول السحابية",
