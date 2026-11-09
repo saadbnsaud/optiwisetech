@@ -165,18 +165,20 @@
             z-index: 2;
             padding: 16px;
             background: linear-gradient(135deg, rgba(7, 140, 255, 0.25), rgba(255, 255, 255, 0.05));
-            border-radius: 25px;
-            box-shadow: 0 25px 60px rgba(0, 140, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            box-shadow: 0 25px 60px rgba(0, 140, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 420px;
+            margin: 0 auto;
         }
 
         .hero-image img {
             width: 100%;
             height: auto;
-            aspect-ratio: 1524 / 704;
-            object-fit: contain;
-            background-color: #0c1b2d;
-            border-radius: 16px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background-color: #ffffff;
+            border-radius: 50%;
             display: block;
         }
 
@@ -886,7 +888,7 @@
             document.getElementById('submitIcon').className = "fas fa-paper-plane ms-2";
         }
 
-        // تحديث النصوص بناءً على القاموس
+        // تحديث النصوص بناءً على اللغة
         document.querySelectorAll('[data-key]').forEach(el => {
             const key = el.getAttribute('data-key');
             if (translations[currentLang][key]) {
@@ -894,11 +896,11 @@
             }
         });
 
-        // تحديث البليس هولدر (Placeholder)
+        // تحديث الـ placeholders
         document.querySelectorAll('[data-placeholder]').forEach(el => {
             const key = el.getAttribute('data-placeholder');
             if (translations[currentLang][key]) {
-                el.placeholder = translations[currentLang][key];
+                el.setAttribute('placeholder', translations[currentLang][key]);
             }
         });
     }
