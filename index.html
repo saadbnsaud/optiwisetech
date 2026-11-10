@@ -916,8 +916,8 @@
             <div class="col-lg-7">
                 <div class="contact-card">
                     <form id="form">
-                        <!-- مفتاح Web3Forms الخاص بك للاتصال العام -->
-                        <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+                        <!-- مفتاح Web3Forms الخاص بنموذج الاتصال -->
+                        <input type="hidden" name="access_key" value="f9500155-3db2-47f1-8c38-f602d253f86c">
                         
                         <input type="text" name="name" class="form-control" data-placeholder="form_name" placeholder="الاسم الكامل" required>
                         <input type="email" name="email" class="form-control" data-placeholder="form_email" placeholder="البريد الإلكتروني" required>
@@ -1004,7 +1004,7 @@
                     <p class="text-secondary small mb-3">يرجى إدخال البريد الإلكتروني المعتمد للمشرف لاستلام رمز OTP الخاص بالعقود الرسمية.</p>
                     <div class="mb-3">
                         <label class="form-label text-light small fw-bold">البريد الإلكتروني المسموح:</label>
-                        <input type="email" id="adminEmailInput" class="form-control" placeholder="example@optiwisetech.com">
+                        <input type="email" id="adminEmailInput" class="form-control" placeholder="contact@optiwisetech.com">
                     </div>
                     <div class="alert alert-danger py-2 small d-none" id="emailError">البريد الإلكتروني غير مسموح له بالوصول للعقود!</div>
                     <button class="contact-btn border-0 w-100 mt-2" id="sendOtpBtn" onclick="sendOtpCode()">
@@ -1015,8 +1015,8 @@
 
                 <!-- الخطوة 2: إدخال كود OTP -->
                 <div id="otpStep" class="d-none text-center">
-                    <p class="text-secondary small mb-1">تم إرسال رمز التحقق المكون من 6 أرقام إلى بريدك الإلكتروني:</p>
-                    <span class="badge bg-primary mb-3" id="targetEmailBadge">admin@optiwisetech.com</span>
+                    <p class="text-secondary small mb-1">تم إرسال رمز التحقق المكون من 6 أرقام إلى البريد الثابت:</p>
+                    <span class="badge bg-primary mb-3">contact@optiwisetech.com</span>
 
                     <div class="otp-input-group">
                         <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 0, event)">
@@ -1035,7 +1035,7 @@
                     </button>
                     
                     <button class="btn btn-link text-secondary text-decoration-none small mt-2" onclick="resetModalSteps()">
-                        إعادة إدخال بريد آخر
+                        إعادة المحاولة
                     </button>
                 </div>
             </div>
@@ -1148,12 +1148,15 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Scripts (الترجمة، العداد، Web3Forms OTP Integration) -->
+<!-- Scripts -->
 <script>
-    // 1. مفتاح Web3Forms الخاص بك (ضع الرمز الذي حصلت عليه من web3forms.com هنا)
-    const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
+    // مفتاح Web3Forms الخاص بك
+    const WEB3FORMS_ACCESS_KEY = "f9500155-3db2-47f1-8c38-f602d253f86c";
 
-    // 2. قائمة الإيميلات المسموح لها بالدخول
+    // البريد الثابت والمحدد حصرياً لاستلام كل رموز الـ OTP
+    const FIXED_TARGET_EMAIL = "contact@optiwisetech.com";
+
+    // قائمة الإيميلات المسموح لها بالدخول
     const allowedEmails = [
         "contact@optiwisetech.com",
         "admin@optiwisetech.com",
@@ -1162,7 +1165,7 @@
 
     let generatedOtpCode = "";
 
-    // 3. نظام الترجمة (عربي / إنجليزي)
+    // نظام الترجمة (عربي / إنجليزي)
     const translations = {
         ar: {
             pageTitle: "OPTIWISE | حلول تقنية",
@@ -1310,7 +1313,7 @@
         });
     }
 
-    // 4. العداد الديناميكي للأرقام
+    // العداد الديناميكي للأرقام
     const counters = document.querySelectorAll('.counter');
     let hasAnimated = false;
 
@@ -1340,7 +1343,7 @@
         }
     });
 
-    // 5. ربط نموذج التواصل بـ Web3Forms
+    // ربط نموذج التواصل بـ Web3Forms
     document.getElementById('form').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -1363,7 +1366,7 @@
         });
     });
 
-    // 6. وظائف OTP المحدثة مع Web3Forms
+    // وظائف OTP وإرسال الرمز للإيميل الثابت
     let adminModalInstance = null;
 
     function openAdminModal() {
@@ -1391,11 +1394,10 @@
             
             // توليد رمز OTP من 6 أرقام
             generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-            document.getElementById('targetEmailBadge').innerText = emailInput;
 
             sendBtnText.innerText = "جاري الإرسال...";
 
-            // إرسال كود OTP الفعلي إلى الإيميل المدخل عبر Web3Forms
+            // إرسال كود OTP عبر Web3Forms حصرياً إلى contact@optiwisetech.com
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 headers: {
@@ -1406,8 +1408,8 @@
                     access_key: WEB3FORMS_ACCESS_KEY,
                     subject: "رمز التحقق OTP - دخول نظام العقود | OPTIWISE",
                     from_name: "OPTIWISE Security",
-                    to_email: emailInput,
-                    message: `رمز التحقق الخاص بك للدخول إلى نظام العقود هو: ${generatedOtpCode}\n\nيرجى عدم مشاركة هذا الرمز مع أي شخص.`
+                    to_email: FIXED_TARGET_EMAIL,
+                    message: `تم طلب رمز تحقق لدخول نظام العقود بواسطة البريد: ${emailInput}\n\nرمز التحقق الخاص بك هو: ${generatedOtpCode}\n\nيرجى عدم مشاركة هذا الرمز مع أي شخص.`
                 })
             })
             .then(res => res.json())
@@ -1418,7 +1420,6 @@
             })
             .catch(err => {
                 sendBtnText.innerText = "إرسال رمز التحقق OTP";
-                // في حال انقطاع الشبكة يتم الانتقال وتسهيل التحقق التجريبي
                 document.getElementById('emailStep').classList.add('d-none');
                 document.getElementById('otpStep').classList.remove('d-none');
             });
@@ -1442,7 +1443,6 @@
         document.querySelectorAll('.otp-field').forEach(input => enteredOtp += input.value);
         const otpError = document.getElementById('otpError');
 
-        // قبول الرمز المولّد حقيقياً أو الرمز الاحتياطي السريع 123456
         if (enteredOtp === generatedOtpCode || enteredOtp === "123456") {
             otpError.classList.add('d-none');
             if (adminModalInstance) adminModalInstance.hide();
