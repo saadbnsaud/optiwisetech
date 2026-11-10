@@ -719,16 +719,40 @@
             </div>
             <div class="col-lg-7">
                 <div class="contact-card">
-                    <form id="contactForm">
-                        <input type="text" class="form-control" data-placeholder="form_name" placeholder="الاسم الكامل" required>
-                        <input type="email" class="form-control" data-placeholder="form_email" placeholder="البريد الإلكتروني" required>
-                        <input type="text" class="form-control" data-placeholder="form_subject" placeholder="موضوع الرسالة">
-                        <textarea class="form-control" rows="5" data-placeholder="form_msg" placeholder="اكتب رسالتك هنا..." required></textarea>
-                        <button type="submit" class="contact-btn border-0 w-100 mt-2">
-                            <span data-key="form_submit">إرسال الرسالة</span>
-                            <i class="fas fa-paper-plane ms-2" id="submitIcon"></i>
-                        </button>
-                    </form>
+                    <form id="contactForm" onsubmit="sendEmail(event)">
+    <input type="text" id="senderName" class="form-control" placeholder="الاسم الكامل" required>
+    <input type="email" id="senderEmail" class="form-control" placeholder="البريد الإلكتروني" required>
+    <input type="text" id="senderSubject" class="form-control" placeholder="موضوع الرسالة">
+    <textarea id="senderMsg" class="form-control" rows="5" placeholder="اكتب رسالتك هنا..." required></textarea>
+    <button type="submit" class="contact-btn border-0 w-100 mt-2">
+        <span data-key="form_submit">إرسال الرسالة</span>
+        <i class="fas fa-paper-plane ms-2"></i>
+    </button>
+</form>
+
+<script>
+function sendEmail(event) {
+    event.preventDefault(); // منع إعادة تحميل الصفحة
+    
+    // جلب البيانات التي كتبها الزائر
+    const name = document.getElementById('senderName').value;
+    const email = document.getElementById('senderEmail').value;
+    const subject = document.getElementById('senderSubject').value;
+    const message = document.getElementById('senderMsg').value;
+    
+    // البريد الخاص بشركتك الذي ستصل إليه الرسائل
+    const companyEmail = "contact@optiwisetech.com";
+    
+    // تجهيز محتوى الإيميل تلقائياً
+    const emailSubject = encodeURIComponent(subject ? subject : "رسالة جديدة من موقع OPTIWISE");
+    const emailBody = encodeURIComponent(
+        `الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`
+    );
+    
+    // فتح برنامج الإيميل الخاص بالمستخدم مع تعبئة البيانات جاهزة
+    window.location.href = `mailto:${companyEmail}?subject=${emailSubject}&body=${emailBody}`;
+}
+</script>
                 </div>
             </div>
         </div>
