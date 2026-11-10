@@ -27,14 +27,14 @@
             --light: #f5f8fc;
         }
         .nav-logo-text {
-    color: #ffffff; /* لجعل WISE بيضاء */
-    font-size: 24px;
-    font-weight: 900;
-}
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+        }
 
-.nav-logo-text span {
-    color: #078cff; /* لجعل OPTI زرقاء */
-}
+        .nav-logo-text span {
+            color: #078cff;
+        }
 
         * {
             margin: 0;
@@ -181,7 +181,6 @@
             margin-bottom: 35px;
         }
 
-        /* إطار صورة الـ Hero */
         .hero-image {
             position: relative;
             z-index: 2;
@@ -637,7 +636,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="service-card">
                     <div class="service-icon"><i class="fas fa-globe"></i></div>
-                    <h4 data-key="serv_2_title">الم مواقع الإلكترونية</h4>
+                    <h4 data-key="serv_2_title">المواقع الإلكترونية</h4>
                     <p data-key="serv_2_desc">تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.</p>
                 </div>
             </div>
@@ -685,30 +684,37 @@
             <div class="col-lg-5">
                 <div class="contact-card">
                     <h4 class="mb-4" data-key="contact_info_title">معلومات التواصل</h4>
+                    
+                    <!-- رقم الجوال / واتساب (مفعل للضغط) -->
                     <div class="contact-item">
-                        <i class="fab fa-whatsapp" style="color: #25d366;"></i>
-                        <div>
-                            <p data-key="contact_phone_label">رقم الجوال / واتساب</p>
-                            <a href="https://wa.me/966555912995" target="_blank" style="color: inherit; text-decoration: none;">
+                        <a href="https://wa.me/966555912995" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 20px; color: inherit; width: 100%;">
+                            <i class="fab fa-whatsapp" style="color: #25d366;"></i>
+                            <div>
+                                <p data-key="contact_phone_label">رقم الجوال / واتساب</p>
                                 <h6 dir="ltr">0555912995</h6>
-                            </a>
-                        </div>
+                            </div>
+                        </a>
                     </div>
+
+                    <!-- البريد الإلكتروني (مفعل للضغط ليفتح برنامج البريد) -->
                     <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <p data-key="contact_email_label">البريد الإلكتروني</p>
-                            <h6>contact@optiwisetech.com</h6>
-                        </div>
+                        <a href="mailto:contact@optiwisetech.com" style="text-decoration: none; display: flex; align-items: center; gap: 20px; color: inherit; width: 100%;">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <p data-key="contact_email_label">البريد الإلكتروني</p>
+                                <h6>contact@optiwisetech.com</h6>
+                            </div>
+                        </a>
                     </div>
                     
-<a href="https://maps.app.goo.gl/H3x9o21i7s18EcHZ9" target="_blank" class="contact-item text-decoration-none" style="color: inherit; display: flex; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
-    <i class="fas fa-location-dot"></i>
-    <div>
-        <p data-key="contact_loc_label">موقعنا</p>
-        <h6 data-key="contact_loc_val">الدمام - حي الفيصلية - طريق أبو بكر الصديق</h6>
-    </div>
-</a>
+                    <!-- الموقع (خرائط جوجل - مفعل للضغط) -->
+                    <a href="https://maps.app.goo.gl/H3x9o21i7s18EcHZ9" target="_blank" class="contact-item text-decoration-none" style="color: inherit; display: flex; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fas fa-location-dot"></i>
+                        <div>
+                            <p data-key="contact_loc_label">موقعنا</p>
+                            <h6 data-key="contact_loc_val">الدمام - حي الفيصلية - طريق أبو بكر الصديق</h6>
+                        </div>
+                    </a>
                 </div>
             </div>
             <div class="col-lg-7">
@@ -756,16 +762,22 @@
                 <h5 class="footer-title" data-key="contact_info_title">تواصل معنا</h5>
                 <ul class="footer-links">
                     <li>
-                        <i class="fab fa-whatsapp ms-2" style="color: #25d366;"></i>
-                        <a href="https://wa.me/966555912995" target="_blank" dir="ltr">0555912995</a>
+                        <a href="https://wa.me/966555912995" target="_blank" style="color: #91a2b7; text-decoration: none;">
+                            <i class="fab fa-whatsapp ms-2" style="color: #25d366;"></i>
+                            <span dir="ltr">0555912995</span>
+                        </a>
                     </li>
                     <li>
-                        <i class="fas fa-location-dot ms-2" id="footerLocIcon"></i>
-                        <span data-key="footer_address">الدمام - حي الفيصلية</span>
+                        <a href="https://maps.app.goo.gl/H3x9o21i7s18EcHZ9" target="_blank" style="color: #91a2b7; text-decoration: none;">
+                            <i class="fas fa-location-dot ms-2" id="footerLocIcon"></i>
+                            <span data-key="footer_address">الدمام - حي الفيصلية</span>
+                        </a>
                     </li>
                     <li>
-                        <i class="fas fa-road ms-2" id="footerRoadIcon"></i>
-                        <span data-key="footer_road">طريق أبو بكر الصديق</span>
+                        <a href="https://maps.app.goo.gl/H3x9o21i7s18EcHZ9" target="_blank" style="color: #91a2b7; text-decoration: none;">
+                            <i class="fas fa-road ms-2" id="footerRoadIcon"></i>
+                            <span data-key="footer_road">طريق أبو بكر الصديق</span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -777,9 +789,9 @@
 </footer>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.5org/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script الترجمة -->
+<!-- Script الترجمة والتفاعل -->
 <script>
     const translations = {
         ar: {
@@ -806,7 +818,7 @@
             serv_subheading: "نقدم مجموعة من الحلول والخدمات التقنية لتطوير أعمالك",
             serv_1_title: "تطوير البرمجيات",
             serv_1_desc: "تطوير الأنظمة والبرمجيات المخصصة وفق احتياجات ومتطلبات الأعمال.",
-            serv_2_title: "الم مواقع الإلكترونية",
+            serv_2_title: "المواقع الإلكترونية",
             serv_2_desc: "تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.",
             serv_3_title: "تطبيقات الجوال",
             serv_3_desc: "تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
@@ -892,30 +904,23 @@
 
     function toggleLanguage() {
         currentLang = currentLang === 'ar' ? 'en' : 'ar';
-        const htmlTag = document.getElementById('htmlTag');
+        const html = document.getElementById('htmlTag');
         const bootstrapCSS = document.getElementById('bootstrapCSS');
         const langBtn = document.getElementById('langToggleBtn');
 
         if (currentLang === 'en') {
-            htmlTag.setAttribute('dir', 'ltr');
-            htmlTag.setAttribute('lang', 'en');
-            bootstrapCSS.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css');
-            langBtn.innerText = 'عربي';
-            document.body.style.fontFamily = "'Cairo', sans-serif";
-            
-            document.getElementById('heroIcon').className = "fas fa-arrow-right ms-2";
-            document.getElementById('submitIcon').className = "fas fa-paper-plane ms-2";
+            html.setAttribute('lang', 'en');
+            html.setAttribute('dir', 'ltr');
+            bootstrapCSS.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
+            langBtn.textContent = 'العربية';
         } else {
-            htmlTag.setAttribute('dir', 'rtl');
-            htmlTag.setAttribute('lang', 'ar');
-            bootstrapCSS.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css');
-            langBtn.innerText = 'English';
-            document.body.style.fontFamily = "'Cairo', sans-serif";
-
-            document.getElementById('heroIcon').className = "fas fa-arrow-left ms-2";
-            document.getElementById('submitIcon').className = "fas fa-paper-plane ms-2";
+            html.setAttribute('lang', 'ar');
+            html.setAttribute('dir', 'rtl');
+            bootstrapCSS.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css';
+            langBtn.textContent = 'English';
         }
 
+        // تحديث النصوص بناءً على القاموس
         document.querySelectorAll('[data-key]').forEach(el => {
             const key = el.getAttribute('data-key');
             if (translations[currentLang][key]) {
@@ -923,10 +928,11 @@
             }
         });
 
+        // تحديث الـ placeholders
         document.querySelectorAll('[data-placeholder]').forEach(el => {
             const key = el.getAttribute('data-placeholder');
             if (translations[currentLang][key]) {
-                el.setAttribute('placeholder', translations[currentLang][key]);
+                el.placeholder = translations[currentLang][key];
             }
         });
     }
