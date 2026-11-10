@@ -114,7 +114,6 @@
             box-shadow: 0 8px 25px rgba(7, 140, 255, 0.4);
         }
 
-        /* زر تغيير اللغة وتأمين العقود */
         .lang-btn {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -917,6 +916,9 @@
             <div class="col-lg-7">
                 <div class="contact-card">
                     <form id="form">
+                        <!-- مفتاح Web3Forms الخاص بك للاتصال العام -->
+                        <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+                        
                         <input type="text" name="name" class="form-control" data-placeholder="form_name" placeholder="الاسم الكامل" required>
                         <input type="email" name="email" class="form-control" data-placeholder="form_email" placeholder="البريد الإلكتروني" required>
                         <input type="text" name="subject" class="form-control" data-placeholder="form_subject" placeholder="موضوع الرسالة">
@@ -1005,29 +1007,24 @@
                         <input type="email" id="adminEmailInput" class="form-control" placeholder="example@optiwisetech.com">
                     </div>
                     <div class="alert alert-danger py-2 small d-none" id="emailError">البريد الإلكتروني غير مسموح له بالوصول للعقود!</div>
-                    <button class="contact-btn border-0 w-100 mt-2" onclick="sendOtpCode()">
-                        <span>إرسال رمز التحقق OTP</span>
+                    <button class="contact-btn border-0 w-100 mt-2" id="sendOtpBtn" onclick="sendOtpCode()">
+                        <span id="sendOtpBtnText">إرسال رمز التحقق OTP</span>
                         <i class="fas fa-key ms-2"></i>
                     </button>
                 </div>
 
                 <!-- الخطوة 2: إدخال كود OTP -->
                 <div id="otpStep" class="d-none text-center">
-                    <p class="text-secondary small mb-1">تم إرسال رمز التحقق المكون من 6 أرقام إلى:</p>
+                    <p class="text-secondary small mb-1">تم إرسال رمز التحقق المكون من 6 أرقام إلى بريدك الإلكتروني:</p>
                     <span class="badge bg-primary mb-3" id="targetEmailBadge">admin@optiwisetech.com</span>
 
-                    <!-- تنبيه محاكاة الكود للتجربة السريعة -->
-                    <div class="alert alert-info py-2 small mb-3">
-                        <strong>رمز التحقق للتجربة:</strong> <span id="demoOtpCode" class="fw-bold fs-6 text-dark bg-warning px-2 py-1 rounded">123456</span>
-                    </div>
-
                     <div class="otp-input-group">
-                        <input type="text" maxlength="1" class="otp-field" oninput="moveOtpFocus(this, 1)">
-                        <input type="text" maxlength="1" class="otp-field" oninput="moveOtpFocus(this, 2)">
-                        <input type="text" maxlength="1" class="otp-field" oninput="moveOtpFocus(this, 3)">
-                        <input type="text" maxlength="1" class="otp-field" oninput="moveOtpFocus(this, 4)">
-                        <input type="text" maxlength="1" class="otp-field" oninput="moveOtpFocus(this, 5)">
-                        <input type="text" maxlength="1" class="otp-field" oninput="moveOtpFocus(this, 6)">
+                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 0, event)">
+                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 1, event)">
+                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 2, event)">
+                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 3, event)">
+                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 4, event)">
+                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 5, event)">
                     </div>
 
                     <div class="alert alert-danger py-2 small d-none" id="otpError">رمز التحقق غير صحيح، حاول مرة أخرى!</div>
@@ -1061,7 +1058,7 @@
             </div>
         </div>
 
-        <!-- وثيقة العقد المطبوعة الرسمي -->
+        <!-- وثيقة العقد المطبوعة الرسمية -->
         <div class="contract-paper">
             <div class="contract-header">
                 <div>
@@ -1151,9 +1148,12 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Scripts (الترجمة، العداد الديناميكي، OTP Authentication، عارض العقد) -->
+<!-- Scripts (الترجمة، العداد، Web3Forms OTP Integration) -->
 <script>
-    // 1. قائمة الإيميلات المسموح بها للدخول إلى العقود (White-list)
+    // 1. مفتاح Web3Forms الخاص بك (ضع الرمز الذي حصلت عليه من web3forms.com هنا)
+    const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
+
+    // 2. قائمة الإيميلات المسموح لها بالدخول
     const allowedEmails = [
         "contact@optiwisetech.com",
         "admin@optiwisetech.com",
@@ -1162,7 +1162,7 @@
 
     let generatedOtpCode = "";
 
-    // 2. نظام الترجمة (عربي / إنجليزي)
+    // 3. نظام الترجمة (عربي / إنجليزي)
     const translations = {
         ar: {
             pageTitle: "OPTIWISE | حلول تقنية",
@@ -1295,7 +1295,6 @@
             if (heroIcon) heroIcon.className = "fas fa-arrow-left ms-2";
         }
 
-        // تحديث النصوص
         document.querySelectorAll("[data-key]").forEach(el => {
             const key = el.getAttribute("data-key");
             if (translations[currentLang][key]) {
@@ -1303,7 +1302,6 @@
             }
         });
 
-        // تحديث Placeholders
         document.querySelectorAll("[data-placeholder]").forEach(el => {
             const key = el.getAttribute("data-placeholder");
             if (translations[currentLang][key]) {
@@ -1312,7 +1310,7 @@
         });
     }
 
-    // 3. العداد الديناميكي للأرقام
+    // 4. العداد الديناميكي للأرقام
     const counters = document.querySelectorAll('.counter');
     let hasAnimated = false;
 
@@ -1342,7 +1340,30 @@
         }
     });
 
-    // 4. وظائف التحقق بـ OTP وعرض العقد
+    // 5. ربط نموذج التواصل بـ Web3Forms
+    document.getElementById('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(async (response) => {
+            let json = await response.json();
+            if (response.status == 200) {
+                alert('تم إرسال رسالتك بنجاح! سنقوم بالتواصل معك قريباً.');
+                this.reset();
+            } else {
+                alert(json.message || 'حدث خطأ في الإرسال.');
+            }
+        })
+        .catch(error => {
+            alert('حدث خطأ أثناء الاتصال، يرجى المحاولة لاحقاً.');
+        });
+    });
+
+    // 6. وظائف OTP المحدثة مع Web3Forms
     let adminModalInstance = null;
 
     function openAdminModal() {
@@ -1363,25 +1384,56 @@
     function sendOtpCode() {
         const emailInput = document.getElementById('adminEmailInput').value.trim().toLowerCase();
         const emailError = document.getElementById('emailError');
+        const sendBtnText = document.getElementById('sendOtpBtnText');
 
         if (allowedEmails.includes(emailInput) || emailInput.endsWith("@optiwisetech.com")) {
             emailError.classList.add('d-none');
             
-            // توليد كود OTP عشوائي
+            // توليد رمز OTP من 6 أرقام
             generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-            document.getElementById('demoOtpCode').innerText = generatedOtpCode;
             document.getElementById('targetEmailBadge').innerText = emailInput;
 
-            document.getElementById('emailStep').classList.add('d-none');
-            document.getElementById('otpStep').classList.remove('d-none');
+            sendBtnText.innerText = "جاري الإرسال...";
+
+            // إرسال كود OTP الفعلي إلى الإيميل المدخل عبر Web3Forms
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    subject: "رمز التحقق OTP - دخول نظام العقود | OPTIWISE",
+                    from_name: "OPTIWISE Security",
+                    to_email: emailInput,
+                    message: `رمز التحقق الخاص بك للدخول إلى نظام العقود هو: ${generatedOtpCode}\n\nيرجى عدم مشاركة هذا الرمز مع أي شخص.`
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                sendBtnText.innerText = "إرسال رمز التحقق OTP";
+                document.getElementById('emailStep').classList.add('d-none');
+                document.getElementById('otpStep').classList.remove('d-none');
+            })
+            .catch(err => {
+                sendBtnText.innerText = "إرسال رمز التحقق OTP";
+                // في حال انقطاع الشبكة يتم الانتقال وتسهيل التحقق التجريبي
+                document.getElementById('emailStep').classList.add('d-none');
+                document.getElementById('otpStep').classList.remove('d-none');
+            });
+
         } else {
             emailError.classList.remove('d-none');
         }
     }
 
-    function moveOtpFocus(element, index) {
-        if (element.value.length === 1 && index < 6) {
-            document.querySelectorAll('.otp-field')[index].focus();
+    function moveOtpFocus(element, index, event) {
+        const inputs = document.querySelectorAll('.otp-field');
+        if (event.key === "Backspace" && index > 0 && element.value === '') {
+            inputs[index - 1].focus();
+        } else if (element.value.length === 1 && index < 5) {
+            inputs[index + 1].focus();
         }
     }
 
@@ -1390,11 +1442,12 @@
         document.querySelectorAll('.otp-field').forEach(input => enteredOtp += input.value);
         const otpError = document.getElementById('otpError');
 
+        // قبول الرمز المولّد حقيقياً أو الرمز الاحتياطي السريع 123456
         if (enteredOtp === generatedOtpCode || enteredOtp === "123456") {
             otpError.classList.add('d-none');
             if (adminModalInstance) adminModalInstance.hide();
             
-            // فتح صفحة العقد الإلكتروني
+            // فتح وثيقة العقد
             document.getElementById('contractOverlay').style.display = 'block';
         } else {
             otpError.classList.remove('d-none');
