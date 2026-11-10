@@ -26,6 +26,7 @@
             --dark2: #0c1b2d;
             --light: #f5f8fc;
         }
+
         .nav-logo-text {
             color: #ffffff;
             font-size: 24px;
@@ -468,13 +469,16 @@
                 text-align: center;
                 padding-top: 120px;
             }
+
             .hero p {
                 margin-right: auto;
                 margin-left: auto;
             }
+
             .hero-image {
                 margin-top: 50px;
             }
+
             .navbar-nav {
                 padding: 20px 0;
             }
@@ -489,7 +493,7 @@
     <div class="container">
         <a class="navbar-brand" href="#">
             <img src="banner4.png" alt="OPTIWISE" class="nav-logo-custom">
-             <div class="nav-logo-text"><span>OPTI</span>WISE</div>
+            <div class="nav-logo-text"><span>OPTI</span>WISE</div>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -510,6 +514,7 @@
                 </li>
             </ul>
             <div class="d-flex align-items-center">
+                <!-- زر تغيير اللغة -->
                 <button class="lang-btn" id="langToggleBtn" onclick="toggleLanguage()">English</button>
                 <a href="#contact" class="contact-btn" data-key="nav_btn">
                     ابدأ مشروعك معنا
@@ -551,7 +556,7 @@
     </div>
 </section>
 
-<!-- Statistics -->
+<!-- Statistics (الأرقام حية وديناميكية) -->
 <section class="stats">
     <div class="container">
         <div class="row">
@@ -719,7 +724,6 @@
             
             <div class="col-lg-7">
                 <div class="contact-card">
-                    <!-- تم ضبط الـ ID ليتطابق مع كود الجافاسكريبت -->
                     <form id="form">
                         <input type="text" name="name" class="form-control" data-placeholder="form_name" placeholder="الاسم الكامل" required>
                         <input type="email" name="email" class="form-control" data-placeholder="form_email" placeholder="البريد الإلكتروني" required>
@@ -790,11 +794,12 @@
     </div>
 </footer>
 
-<!-- Bootstrap JS (تم تصحيح الرابط) -->
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- سكريبت الترجمة وإرسال النموذج عبر Web3Forms -->
+<!-- Scripts (الترجمة، العداد الديناميكي، نموذج Web3Forms) -->
 <script>
+    // 1. نظام الترجمة (عربي / إنجليزي)
     const translations = {
         ar: {
             pageTitle: "OPTIWISE | حلول تقنية",
@@ -937,7 +942,52 @@
         });
     }
 
-    // سكريبت إرسال النموذج واستقبال الرسائل عبر Web3Forms
+    // 2. العداد الديناميكي التلقائي المعتمد على الأيام
+    const startDate = new Date('2026-01-01');
+    const today = new Date();
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    const dynamicProjects = 120 + Math.floor(diffDays / 3); 
+    const dynamicPartners = 35 + Math.floor(diffDays / 10); 
+    const dynamicClients = 500 + Math.floor(diffDays * 1.5); 
+
+    const counters = document.querySelectorAll('.counter');
+    if (counters.length >= 3) {
+        counters[0].setAttribute('data-target', dynamicProjects);
+        counters[1].setAttribute('data-target', dynamicPartners);
+        counters[2].setAttribute('data-target', dynamicClients);
+    }
+
+    let countStarted = false;
+    window.addEventListener('scroll', function() {
+        const statsSection = document.querySelector('.stats');
+        if (!statsSection) return;
+        const position = statsSection.getBoundingClientRect();
+
+        if (position.top < window.innerHeight && !countStarted) {
+            countStarted = true;
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 2000;
+                const increment = target / (duration / 16);
+
+                let current = 0;
+                const updateCount = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.innerText = Math.ceil(current);
+                        requestAnimationFrame(updateCount);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                updateCount();
+            });
+        }
+    });
+
+    // 3. إرسال نموذج الاتصال واستقبال الإشعارات في الخلفية
     const form = document.getElementById('form');
     const submitBtn = form.querySelector('button[type="submit"]');
 
