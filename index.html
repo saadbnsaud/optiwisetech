@@ -515,14 +515,36 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
+        .dash-stat-card {
+            background: linear-gradient(145deg, #10233a, #0b1727);
+            border: 1px solid rgba(7, 140, 255, 0.25);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .dash-stat-card h3 {
+            color: var(--secondary);
+            font-size: 32px;
+            font-weight: 900;
+            margin-top: 10px;
+        }
+
+        .dash-stat-card p {
+            color: #91a2b7;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
         .dash-tab-btn {
             background: #10233a;
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #aebdce;
-            padding: 14px 26px;
+            padding: 12px 22px;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             transition: 0.3s;
             cursor: pointer;
             display: inline-flex;
@@ -1075,21 +1097,48 @@
             </div>
         </div>
 
-        <!-- Main Action Buttons -->
+        <!-- Analytics Overview Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="dash-stat-card">
+                    <p><i class="fas fa-users text-primary me-1"></i> إجمالي الزوار</p>
+                    <h3 id="statVisitors">1,482</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dash-stat-card">
+                    <p><i class="fas fa-file-signature text-info me-1"></i> إجمالي العقود</p>
+                    <h3 id="statContractsCount">0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dash-stat-card">
+                    <p><i class="fas fa-user-tie text-warning me-1"></i> فهد (فواتير / مبلغ)</p>
+                    <h3 id="statFahdTotal" class="fs-5 mt-2">0 فواتير (0 ر.س)</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dash-stat-card">
+                    <p><i class="fas fa-user-tie text-success me-1"></i> سعد (فواتير / مبلغ)</p>
+                    <h3 id="statSaadTotal" class="fs-5 mt-2">0 فواتير (0 ر.س)</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Action Navigation Tabs -->
         <div class="d-flex flex-wrap gap-3 mb-4">
-            <button class="dash-tab-btn active" id="btnTabInvoices">
+            <button class="dash-tab-btn active" id="btnTabInvoices" onclick="switchDashboardTab('invoices')">
                 <i class="fas fa-file-invoice-dollar"></i>
-                إضافة فاتورة / سجل الفواتير السحابي
+                سجل الفواتير السحابي
             </button>
-            <button class="dash-tab-btn" onclick="openContractFromDashboard()">
+            <button class="dash-tab-btn" id="btnTabContracts" onclick="switchDashboardTab('contracts')">
                 <i class="fas fa-file-signature"></i>
-                إضافة عقد جديد
+                سجل العقود والشركات
             </button>
         </div>
 
         <!-- Section 1: Invoices Form & Table -->
         <div id="dashInvoicesSection">
-            <!-- Form Card -->
             <div class="dash-card mb-4">
                 <h5 class="fw-bold mb-4 text-info">
                     <i class="fas fa-plus-circle me-2"></i> تسجيل فاتورة جديدة سحابياً
@@ -1135,7 +1184,6 @@
                 </form>
             </div>
 
-            <!-- Invoices Table Card -->
             <div class="dash-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">
@@ -1159,29 +1207,84 @@
                             </tr>
                         </thead>
                         <tbody id="invoicesTableBody">
-                            <!-- سيتم جلب البيانات وتعبئتها من فايربيز تلقائياً -->
+                            <tr><td colspan="8" class="text-center text-info py-3">جاري التحميل...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        <!-- Section 2: Contracts & Companies Form & Table -->
+        <div id="dashContractsSection" style="display: none;">
+            <div class="dash-card mb-4">
+                <h5 class="fw-bold mb-4 text-info">
+                    <i class="fas fa-file-contract me-2"></i> إصدار وحفظ عقد جديد للشركة سحابياً
+                </h5>
+                <form id="contractForm" onsubmit="addContractToFirestore(event)">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary">اسم الشركة العميل</label>
+                            <input type="text" id="conCompanyName" class="form-control mb-0" placeholder="مثال: شركة التقنية المتقدمة" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-secondary">نوع الخدمة / البند الرئيسي</label>
+                            <input type="text" id="conService" class="form-control mb-0" placeholder="تطوير موقع أو نظام" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-secondary">تكلفة العقد (ر.س)</label>
+                            <input type="number" step="0.01" id="conAmount" class="form-control mb-0" placeholder="0.00" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" id="saveContractBtn" class="contact-btn border-0 w-100 text-center py-3">
+                                <i class="fas fa-save me-1"></i> حفظ العقد
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="dash-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-folder-open text-primary me-2"></i> سجل العقود والشركات المخزنة سحابياً
+                    </h5>
+                    <span class="badge bg-primary" id="contractsCountBadge">0 عقود</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">م</th>
+                                <th>اسم الشركة</th>
+                                <th>نوع الخدمة</th>
+                                <th>التكلفة</th>
+                                <th>تاريخ العقد</th>
+                                <th style="width: 140px;">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractsTableBody">
+                            <tr><td colspan="6" class="text-center text-info py-3">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<!-- Contract Overlay (نموذج إضافة عقد) -->
+<!-- Contract Print/View Overlay -->
 <div id="contractOverlay">
     <div class="container mb-3 d-flex justify-content-between align-items-center no-print" style="max-width: 850px;">
         <div>
-            <button class="btn btn-outline-light fw-bold" onclick="backToDashboardFromContract()">
-                <i class="fas fa-arrow-right me-1"></i> العودة للداشبورد
+            <button class="btn btn-outline-light fw-bold" onclick="closeContractView()">
+                <i class="fas fa-arrow-right me-1"></i> إغلاق المعاينة
             </button>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-primary fw-bold" onclick="window.print()">
                 <i class="fas fa-print me-1"></i> طباعة / حفظ PDF
-            </button>
-            <button class="btn btn-outline-danger fw-bold" onclick="firebaseLogout()">
-                <i class="fas fa-sign-out-alt me-1"></i> تسجيل خروج
             </button>
         </div>
     </div>
@@ -1189,36 +1292,36 @@
     <div class="contract-paper" dir="rtl">
         <div class="contract-header">
             <div>
-                <div class="contract-title">عقد تقديم خدمات تقنية</div>
+                <div class="contract-title">عقد تقديم خدمات تقنية وتطوير</div>
                 <div class="text-muted small mt-1">OPTIWISE TECH SOLUTIONS</div>
             </div>
             <div class="text-end">
-                <span class="contract-badge">مسودة عقد رسمي</span>
-                <div class="small text-muted mt-2" id="contractDate">التاريخ: 2026</div>
+                <span class="contract-badge" id="printContractBadge">عقد رسمي معتمد</span>
+                <div class="small text-muted mt-2" id="printContractDate">التاريخ: 2026</div>
             </div>
         </div>
 
         <div class="contract-section">
             <h5>أولاً: أطراف العقد</h5>
             <p class="small mb-2"><strong>الطرف الأول:</strong> مؤسسة/شركة OPTIWISE للحلول التقنية، ومقرها الدمام - حي الفيصلية.</p>
-            <p class="small mb-0"><strong>الطرف الثاني (العميل):</strong> <span contenteditable="true" class="border-bottom border-primary px-2 text-primary fw-bold">[اكتب اسم العميل أو الشركة هنا]</span></p>
+            <p class="small mb-0"><strong>الطرف الثاني (الشركه العميل):</strong> <span id="printCompanyName" class="text-primary fw-bold">--</span></p>
         </div>
 
         <div class="contract-section">
-            <h5>ثانياً: نطاق العمل والخدمات</h5>
+            <h5>ثانياً: نطاق العمل والخدمات والتكلفة</h5>
             <table class="contract-table">
                 <thead>
                     <tr>
                         <th>البند / الخدمة</th>
-                        <th>التفاصيل</th>
-                        <th>التكلفة (ر.س)</th>
+                        <th>التفاصيل التقنية</th>
+                        <th>التكلفة الإجمالية (ر.س)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td contenteditable="true">تطوير موقع إلكتروني / نظام</td>
-                        <td contenteditable="true">تصميم وتطوير متكامل متجاوب مع جميع الشاشات</td>
-                        <td contenteditable="true">0.00</td>
+                        <td id="printServiceType">تطوير نظام وبرمجيات</td>
+                        <td>تنفيذ المشروع وفق المواصفات الفنية المتفق عليها بدقة واحترافية.</td>
+                        <td id="printServiceAmount" class="fw-bold">0.00</td>
                     </tr>
                 </tbody>
             </table>
@@ -1230,8 +1333,8 @@
                 <p class="text-muted small">الإدارة التنفيذية</p>
             </div>
             <div class="signature-box">
-                <p class="fw-bold mb-1">توقيع الطرف الثاني (العميل)</p>
-                <p class="text-muted small">الاسم والتوقيع والختم</p>
+                <p class="fw-bold mb-1">توقيع الطرف الثاني (الشركة العميل)</p>
+                <p class="text-muted small" id="printSignCompany">ختم وتوقيع الشركة</p>
             </div>
         </div>
     </div>
@@ -1259,12 +1362,27 @@
         document.getElementById('adminDashboardOverlay').style.display = 'none';
     }
 
-    function openContractFromDashboard() {
-        document.getElementById('adminDashboardOverlay').style.display = 'none';
-        document.getElementById('contractOverlay').style.display = 'block';
+    function switchDashboardTab(tabName) {
+        const btnInv = document.getElementById('btnTabInvoices');
+        const btnCon = document.getElementById('btnTabContracts');
+        const secInv = document.getElementById('dashInvoicesSection');
+        const secCon = document.getElementById('dashContractsSection');
+
+        if (tabName === 'invoices') {
+            btnInv.classList.add('active');
+            btnCon.classList.remove('active');
+            secInv.style.display = 'block';
+            secCon.style.display = 'none';
+        } else {
+            btnCon.classList.add('active');
+            btnInv.classList.remove('active');
+            secCon.style.display = 'block';
+            secInv.style.display = 'none';
+            loadContractsFromFirestore();
+        }
     }
 
-    function backToDashboardFromContract() {
+    function closeContractView() {
         document.getElementById('contractOverlay').style.display = 'none';
         document.getElementById('adminDashboardOverlay').style.display = 'block';
     }
@@ -1394,6 +1512,7 @@
     const db = getFirestore(app);
     window.currentUser = null;
     window.loadedInvoices = [];
+    window.loadedContracts = [];
 
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
@@ -1401,6 +1520,7 @@
         if (user && badge) {
             badge.innerText = `متصل كـ: ${user.email}`;
             loadInvoicesFromFirestore();
+            loadContractsFromFirestore();
         }
     });
 
@@ -1438,14 +1558,12 @@
         document.getElementById('contractOverlay').style.display = 'none';
     };
 
-    // جلب الفواتير وحساب الرقم التزايدي سحابياً من Firestore
+    // جلب وتحديث الفواتير وحساب إحصائيات فهد وسعد
     window.loadInvoicesFromFirestore = async function() {
         const tbody = document.getElementById('invoicesTableBody');
         const nextNumInput = document.getElementById('invNumber');
         const countBadge = document.getElementById('invoicesCountBadge');
         if (!tbody) return;
-
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-info py-3">جاري تحميل الفواتير من السحابة...</td></tr>`;
 
         try {
             const querySnapshot = await getDocs(collection(db, "invoices"));
@@ -1465,8 +1583,26 @@
             }
 
             if (countBadge) countBadge.innerText = `${invoices.length} فواتير`;
-            tbody.innerHTML = '';
+            
+            // حساب مجاميع فهد وسعد
+            let fahdCount = 0, fahdSum = 0;
+            let saadCount = 0, saadSum = 0;
 
+            invoices.forEach(inv => {
+                const amt = Number(inv.amount || 0);
+                if (inv.owner && inv.owner.includes('فهد')) {
+                    fahdCount++;
+                    fahdSum += amt;
+                } else if (inv.owner && inv.owner.includes('سعد')) {
+                    saadCount++;
+                    saadSum += amt;
+                }
+            });
+
+            document.getElementById('statFahdTotal').innerText = `${fahdCount} فواتير (${fahdSum.toFixed(2)} ر.س)`;
+            document.getElementById('statSaadTotal').innerText = `${saadCount} فواتير (${saadSum.toFixed(2)} ر.س)`;
+
+            tbody.innerHTML = '';
             if (invoices.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary py-4">لا توجد فواتير مضافة سحابياً بعد.</td></tr>`;
                 return;
@@ -1488,7 +1624,7 @@
                             <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="viewFileDirectly(${index})">
                                 <i class="fas ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> فتح
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFileDirectly(${index})" title="تحميل">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="viewFileDirectly(${index})" title="تحميل">
                                 <i class="fas fa-download"></i>
                             </button>
                         </div>
@@ -1504,25 +1640,122 @@
 
         } catch (err) {
             console.error("Error loading invoices:", err);
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">حدث خطأ أثناء جلب الفواتير.</td></tr>`;
         }
     };
 
-    // تحويل Base64 إلى Blob ليعمل بامتياز على الكمبيوتر والجوال
-    function base64ToBlobUrl(base64Data) {
-        const parts = base64Data.split(';base64,');
-        const contentType = parts[0].split(':')[1] || 'application/pdf';
-        const raw = window.atob(parts[1]);
-        const rawLength = raw.length;
-        const uInt8Array = new Uint8Array(rawLength);
-        for (let i = 0; i < rawLength; ++i) {
-            uInt8Array[i] = raw.charCodeAt(i);
-        }
-        const blob = new Blob([uInt8Array], { type: contentType });
-        return URL.createObjectURL(blob);
-    }
+    // جلب العقود من Firestore
+    window.loadContractsFromFirestore = async function() {
+        const tbody = document.getElementById('contractsTableBody');
+        const countBadge = document.getElementById('contractsCountBadge');
+        const statContracts = document.getElementById('statContractsCount');
+        if (!tbody) return;
 
-    // فتح الملف مباشرة في تبويب جديد (يتجاوز حظر المودال في الجوال)
+        try {
+            const querySnapshot = await getDocs(collection(db, "contracts"));
+            let contracts = [];
+            querySnapshot.forEach((docSnap) => {
+                contracts.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            contracts.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            window.loadedContracts = contracts;
+
+            if (countBadge) countBadge.innerText = `${contracts.length} عقود`;
+            if (statContracts) statContracts.innerText = contracts.length;
+
+            tbody.innerHTML = '';
+            if (contracts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-4">لا توجد عقود مسجلة للشركات حتى الآن.</td></tr>`;
+                return;
+            }
+
+            contracts.forEach((con, index) => {
+                const row = document.createElement('tr');
+                const dateStr = con.createdAt ? new Date(con.createdAt).toLocaleDateString('ar-SA') : '2026';
+                row.innerHTML = `
+                    <td class="fw-bold text-secondary">${index + 1}</td>
+                    <td><span class="fw-bold text-info">${con.companyName}</span></td>
+                    <td>${con.serviceType}</td>
+                    <td class="fw-bold text-success">${Number(con.amount || 0).toFixed(2)} ر.س</td>
+                    <td class="text-secondary small">${dateStr}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewContract('${con.id}')" title="عرض العقد">
+                                <i class="fas fa-file-contract"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteContractFromFirestore('${con.id}')" title="حذف العقد">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+        } catch (err) {
+            console.error("Error loading contracts:", err);
+        }
+    };
+
+    // إضافة عقد جديد للشركة في Firestore
+    window.addContractToFirestore = async function(event) {
+        event.preventDefault();
+        const companyName = document.getElementById('conCompanyName').value;
+        const serviceType = document.getElementById('conService').value;
+        const amount = document.getElementById('conAmount').value;
+        const saveBtn = document.getElementById('saveContractBtn');
+
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'جاري حفظ العقد...';
+
+        try {
+            await addDoc(collection(db, "contracts"), {
+                companyName: companyName,
+                serviceType: serviceType,
+                amount: Number(amount),
+                createdAt: new Date().toISOString()
+            });
+
+            document.getElementById('contractForm').reset();
+            loadContractsFromFirestore();
+            alert('تم حفظ العقد بنجاح في قاعدة البيانات.');
+        } catch (error) {
+            console.error("Error saving contract:", error);
+            alert('تعذر حفظ العقد.');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> حفظ العقد';
+        }
+    };
+
+    // عرض وتعبئة نموذج العقد للطباعة لشركة معينة
+    window.viewContract = function(contractId) {
+        const con = window.loadedContracts.find(c => c.id === contractId);
+        if (!con) return;
+
+        document.getElementById('printCompanyName').innerText = con.companyName;
+        document.getElementById('printServiceType').innerText = con.serviceType;
+        document.getElementById('printServiceAmount').innerText = `${Number(con.amount).toFixed(2)} ر.س`;
+        document.getElementById('printSignCompany').innerText = `ختم وتوقيع (${con.companyName})`;
+        
+        document.getElementById('adminDashboardOverlay').style.display = 'none';
+        document.getElementById('contractOverlay').style.display = 'block';
+    };
+
+    // حذف عقد من Firestore
+    window.deleteContractFromFirestore = async function(contractId) {
+        if (confirm('هل أنت متأكد من حذف هذا العقد نهائياً؟')) {
+            try {
+                await deleteDoc(doc(db, "contracts", contractId));
+                loadContractsFromFirestore();
+            } catch (err) {
+                console.error("Error deleting contract:", err);
+                alert('تعذر حذف العقد.');
+            }
+        }
+    };
+
+    // تحميل وتنزيل ملف الفاتورة
     window.viewFileDirectly = function(index) {
         const inv = window.loadedInvoices[index];
         if (!inv || !inv.imageUrl) {
@@ -1530,28 +1763,29 @@
             return;
         }
         try {
-            const blobUrl = base64ToBlobUrl(inv.imageUrl);
-            window.open(blobUrl, '_blank');
-        } catch (e) {
-            alert('حدث خطأ في عرض الملف، جرب زر التحميل الأخضر بجانبه.');
-        }
-    };
+            const parts = inv.imageUrl.split(';base64,');
+            const contentType = parts[0].split(':')[1] || 'application/pdf';
+            const raw = window.atob(parts[1]);
+            const rawLength = raw.length;
+            const uInt8Array = new Uint8Array(rawLength);
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            const blob = new Blob([uInt8Array], { type: contentType });
+            const blobUrl = URL.createObjectURL(blob);
+            
+            const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || inv.imageUrl.startsWith('data:application/pdf');
+            const ext = isPdf ? 'pdf' : 'png';
 
-    // تحميل الملف مباشرة على الجهاز أو الجوال
-    window.downloadFileDirectly = function(index) {
-        const inv = window.loadedInvoices[index];
-        if (!inv || !inv.imageUrl) return;
-        
-        const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || inv.imageUrl.startsWith('data:application/pdf');
-        const ext = isPdf ? 'pdf' : 'png';
-        const blobUrl = base64ToBlobUrl(inv.imageUrl);
-        
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = `OPTIWISE_Invoice_${inv.invoiceNumber}.${ext}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `OPTIWISE_Invoice_${inv.invoiceNumber}.${ext}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            alert('تعذر تحميل الملف.');
+        }
     };
 
     // حفظ الفاتورة وملفها مباشرة داخل Firestore
@@ -1584,7 +1818,7 @@
                     notes: invNotes,
                     imageUrl: base64File,
                     fileType: file.type,
-                    createdAt: new Date()
+                    createdAt: new Date().toISOString()
                 });
 
                 document.getElementById('invoiceForm').reset();
