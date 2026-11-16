@@ -1410,7 +1410,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addData, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -1556,8 +1556,7 @@
             await uploadBytes(storageRef, file);
             const imageUrl = await getDownloadURL(storageRef);
 
-            // 2. حفظ بيانات الفاتورة في Firestore
-            const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            // 2. حفظ بيانات الفاتورة في Firestore باستخدام addDoc الصحيحة
             await addDoc(collection(db, "invoices"), {
                 invoiceNumber: Number(invNumber),
                 type: invType,
@@ -1583,10 +1582,8 @@
     window.deleteInvoiceFromFirestore = async function(docId, imagePath) {
         if (confirm('هل أنت متأكد من حذف هذه الفاتورة من السحابة نهائياً؟')) {
             try {
-                // حذف المستند من قاعدة البيانات
                 await deleteDoc(doc(db, "invoices", docId));
 
-                // حذف الصورة من التخزين إذا وجد مسارها
                 if (imagePath) {
                     const imageRef = ref(storage, imagePath);
                     await deleteObject(imageRef).catch(e => console.log(e));
