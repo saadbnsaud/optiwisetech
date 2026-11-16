@@ -569,20 +569,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .invoice-thumb {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid rgba(7, 140, 255, 0.4);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .invoice-thumb:hover {
-            transform: scale(1.1);
-        }
-
         /* Contract Document Styling */
         #contractOverlay {
             position: fixed;
@@ -753,12 +739,10 @@
                 </li>
             </ul>
             <div class="d-flex align-items-center">
-                <!-- زر دخول الإدارة -->
                 <button class="admin-login-btn" onclick="openAdminModal()">
                     <i class="fas fa-lock"></i>
                     <span data-key="nav_admin_btn">بوابة الإدارة</span>
                 </button>
-                <!-- زر تغيير اللغة -->
                 <button class="lang-btn" id="langToggleBtn" onclick="toggleLanguage()">English</button>
                 <a href="#contact" class="contact-btn" data-key="nav_btn">
                     ابدأ مشروعك معنا
@@ -1184,21 +1168,6 @@
     </div>
 </div>
 
-<!-- File Preview Modal -->
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content dark-modal p-3">
-            <div class="modal-header border-0 pb-2">
-                <h6 class="modal-title fw-bold" id="previewModalTitle">معاينة الفاتورة</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center" id="previewContainer">
-                <!-- سيتم عرض الصورة أو الـ PDF هنا -->
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Contract Overlay (نموذج إضافة عقد) -->
 <div id="contractOverlay">
     <div class="container mb-3 d-flex justify-content-between align-items-center no-print" style="max-width: 850px;">
@@ -1505,7 +1474,8 @@
 
             invoices.forEach((inv, index) => {
                 const row = document.createElement('tr');
-                const isPdf = inv.fileType && inv.fileType.includes('pdf');
+                const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || (inv.imageUrl && inv.imageUrl.startsWith('data:application/pdf'));
+                
                 row.innerHTML = `
                     <td class="fw-bold text-secondary">${index + 1}</td>
                     <td><span class="badge bg-info bg-opacity-25 text-info fs-6">#${inv.invoiceNumber}</span></td>
@@ -1514,10 +1484,14 @@
                     <td class="fw-bold">${inv.owner}</td>
                     <td class="text-light">${inv.notes || '-'}</td>
                     <td>
-                        ${isPdf ? 
-                            `<button class="btn btn-sm btn-outline-info" onclick="openInvoicePreview(${index})"><i class="fas fa-file-pdf"></i> عرض PDF</button>` :
-                            `<img src="${inv.imageUrl}" class="invoice-thumb" alt="فاتورة" onclick="openInvoicePreview(${index})" title="اضغط لتكبير الصورة">`
-                        }
+                        <div class="d-flex gap-1">
+                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="viewFileDirectly(${index})">
+                                <i class="fas ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> فتح
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFileDirectly(${index})" title="تحميل">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
                     </td>
                     <td>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteInvoiceFromFirestore('${inv.id}')" title="حذف الفاتورة">
@@ -1530,46 +1504,54 @@
 
         } catch (err) {
             console.error("Error loading invoices:", err);
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">حدث خطأ أثناء جلب الفواتير. تأكد من تفعيل قواعد Firestore.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">حدث خطأ أثناء جلب الفواتير.</td></tr>`;
         }
     };
 
-    // دالة معاينة المستندات والصور عبر Blob URL لتعمل بسلاسة في كل المتصفحات
-    window.openInvoicePreview = function(index) {
+    // تحويل Base64 إلى Blob ليعمل بامتياز على الكمبيوتر والجوال
+    function base64ToBlobUrl(base64Data) {
+        const parts = base64Data.split(';base64,');
+        const contentType = parts[0].split(':')[1] || 'application/pdf';
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+        for (let i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+        const blob = new Blob([uInt8Array], { type: contentType });
+        return URL.createObjectURL(blob);
+    }
+
+    // فتح الملف مباشرة في تبويب جديد (يتجاوز حظر المودال في الجوال)
+    window.viewFileDirectly = function(index) {
+        const inv = window.loadedInvoices[index];
+        if (!inv || !inv.imageUrl) {
+            alert('لا يوجد ملف مرفق.');
+            return;
+        }
+        try {
+            const blobUrl = base64ToBlobUrl(inv.imageUrl);
+            window.open(blobUrl, '_blank');
+        } catch (e) {
+            alert('حدث خطأ في عرض الملف، جرب زر التحميل الأخضر بجانبه.');
+        }
+    };
+
+    // تحميل الملف مباشرة على الجهاز أو الجوال
+    window.downloadFileDirectly = function(index) {
         const inv = window.loadedInvoices[index];
         if (!inv || !inv.imageUrl) return;
-
-        document.getElementById('previewModalTitle').innerText = `معاينة الفاتورة رقم #${inv.invoiceNumber}`;
-        const container = document.getElementById('previewContainer');
-
-        if (inv.fileType && inv.fileType.includes('pdf')) {
-            const byteCharacters = atob(inv.imageUrl.split(',')[1]);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-            const blobUrl = URL.createObjectURL(blob);
-
-            container.innerHTML = `
-                <iframe src="${blobUrl}" width="100%" height="500px" style="border:none; border-radius:8px; background:#fff;"></iframe>
-                <div class="mt-3 d-flex justify-content-center gap-2">
-                    <a href="${blobUrl}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-external-link-alt me-1"></i> فتح في تبويب جديد</a>
-                    <a href="${blobUrl}" download="Invoice_${inv.invoiceNumber}.pdf" class="btn btn-sm btn-success"><i class="fas fa-download me-1"></i> تحميل PDF</a>
-                </div>
-            `;
-        } else {
-            container.innerHTML = `
-                <img src="${inv.imageUrl}" alt="صورة الفاتورة" class="img-fluid rounded" style="max-height: 70vh;">
-                <div class="mt-3">
-                    <a href="${inv.imageUrl}" download="Invoice_${inv.invoiceNumber}.png" class="btn btn-sm btn-success"><i class="fas fa-download me-1"></i> تحميل الصورة</a>
-                </div>
-            `;
-        }
-
-        const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
-        modal.show();
+        
+        const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || inv.imageUrl.startsWith('data:application/pdf');
+        const ext = isPdf ? 'pdf' : 'png';
+        const blobUrl = base64ToBlobUrl(inv.imageUrl);
+        
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `OPTIWISE_Invoice_${inv.invoiceNumber}.${ext}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     // حفظ الفاتورة وملفها مباشرة داخل Firestore
