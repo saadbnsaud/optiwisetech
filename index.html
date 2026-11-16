@@ -485,38 +485,12 @@
             font-size: 14px;
         }
 
-        /* Styles for OTP Auth & PDF Contract Modal */
+        /* Dark Modal */
         .modal-content.dark-modal {
             background: #0c1b2d;
             border: 1px solid rgba(7, 140, 255, 0.3);
             color: #fff;
             border-radius: 20px;
-        }
-
-        .otp-input-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            direction: ltr;
-            margin: 20px 0;
-        }
-
-        .otp-input-group input {
-            width: 45px;
-            height: 55px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: 800;
-            border-radius: 10px;
-            background: #07111f;
-            border: 1px solid rgba(7, 140, 255, 0.3);
-            color: #00c6ff;
-        }
-
-        .otp-input-group input:focus {
-            border-color: #078cff;
-            box-shadow: 0 0 12px rgba(7, 140, 255, 0.4);
-            outline: none;
         }
 
         /* Contract Document Styling */
@@ -918,7 +892,6 @@
             <div class="col-lg-7">
                 <div class="contact-card">
                     <form id="form">
-                        <!-- مفتاح Web3Forms الخاص بنموذج الاتصال -->
                         <input type="hidden" name="access_key" value="f9500155-3db2-47f1-8c38-f602d253f86c">
                         
                         <input type="text" name="name" class="form-control" data-placeholder="form_name" placeholder="الاسم الكامل" required>
@@ -931,6 +904,7 @@
                             <i class="fas fa-paper-plane ms-2"></i>
                         </button>
                     </form>
+                    <div id="formResult" class="mt-3 text-center fw-bold" style="display:none;"></div>
                 </div>
             </div>
         </div>
@@ -990,161 +964,105 @@
     </div>
 </footer>
 
-<!-- Modal: Admin OTP Security Verification -->
-<div class="modal fade" id="adminOtpModal" tabindex="-1" aria-hidden="true">
+<!-- Modal: Admin Firebase Login -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content dark-modal p-4">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title font-weight-bold" id="adminModalTitle">
-                    <i class="fas fa-shield-halved text-primary me-2"></i> التحقق من هوية المسؤول
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-shield-halved text-primary me-2"></i>
+                    تسجيل دخول الإدارة
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- الخطوة 1: أدخل الإيميل المسموح -->
-                <div id="emailStep">
-                    <p class="text-secondary small mb-3">يرجى إدخال البريد الإلكتروني المعتمد للمشرف لاستلام رمز OTP الخاص بالعقود الرسمية.</p>
+                <p class="text-secondary small mb-4">أدخل البريد الإلكتروني وكلمة المرور للوصول إلى بوابة عقود الإدارة.</p>
+                
+                <div id="loginError" class="alert alert-danger py-2 small" style="display: none;"></div>
+
+                <form onsubmit="firebaseLogin(event)">
                     <div class="mb-3">
-                        <label class="form-label text-light small fw-bold">البريد الإلكتروني المسموح:</label>
-                        <input type="email" id="adminEmailInput" class="form-control" placeholder="contact@optiwisetech.com">
+                        <label class="form-label small text-light">البريد الإلكتروني</label>
+                        <input type="email" id="loginEmail" class="form-control mb-0" placeholder="contact@optiwisetech.com" required dir="ltr">
                     </div>
-                    <div class="alert alert-danger py-2 small d-none" id="emailError">البريد الإلكتروني غير مسموح له بالوصول للعقود!</div>
-                    <button class="contact-btn border-0 w-100 mt-2" id="sendOtpBtn" onclick="sendOtpCode()">
-                        <span id="sendOtpBtnText">إرسال رمز التحقق OTP</span>
-                        <i class="fas fa-key ms-2"></i>
-                    </button>
-                </div>
-
-                <!-- الخطوة 2: إدخال كود OTP -->
-                <div id="otpStep" class="d-none text-center">
-                    <p class="text-secondary small mb-1">تم إرسال رمز التحقق المكون من 6 أرقام إلى البريد الثابت:</p>
-                    <span class="badge bg-primary mb-3">contact@optiwisetech.com</span>
-
-                    <div class="otp-input-group">
-                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 0, event)">
-                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 1, event)">
-                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 2, event)">
-                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 3, event)">
-                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 4, event)">
-                        <input type="text" maxlength="1" class="otp-field" onkeyup="moveOtpFocus(this, 5, event)">
+                    <div class="mb-4">
+                        <label class="form-label small text-light">كلمة المرور</label>
+                        <input type="password" id="loginPassword" class="form-control mb-0" placeholder="••••••••" required dir="ltr">
                     </div>
-
-                    <div class="alert alert-danger py-2 small d-none" id="otpError">رمز التحقق غير صحيح، حاول مرة أخرى!</div>
-
-                    <button class="contact-btn border-0 w-100 mt-3" onclick="verifyOtpCode()">
-                        <span>تأكيد ودخول العقد</span>
-                        <i class="fas fa-file-contract ms-2"></i>
+                    <button type="submit" id="loginSubmitBtn" class="contact-btn border-0 w-100 text-center">
+                        تسجيل الدخول
                     </button>
-                    
-                    <button class="btn btn-link text-secondary text-decoration-none small mt-2" onclick="resetModalSteps()">
-                        إعادة المحاولة
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Fullscreen PDF Contract Overlay -->
+<!-- Contract Overlay (بوابة العقود بعد تسجيل الدخول) -->
 <div id="contractOverlay">
-    <div class="container">
-        <!-- أزرار التحكم بالقراءة والطباعة -->
-        <div class="max-width-850 mx-auto d-flex justify-content-between align-items-center mb-3 no-print" style="max-width: 850px;">
-            <button class="btn btn-outline-light rounded-pill px-4" onclick="closeContract()">
-                <i class="fas fa-times me-2"></i> إغلاق العقد
+    <div class="container mb-3 d-flex justify-content-between align-items-center no-print" style="max-width: 850px;">
+        <div>
+            <span class="badge bg-success py-2 px-3" id="loggedInUserBadge">متصل كـ: الإدارة</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary fw-bold" onclick="window.print()">
+                <i class="fas fa-print me-1"></i> طباعة / حفظ PDF
             </button>
-            <div class="d-flex gap-2">
-                <button class="btn btn-primary rounded-pill px-4" onclick="window.print()">
-                    <i class="fas fa-print me-2"></i> طباعة / حفظ كـ PDF
-                </button>
+            <button class="btn btn-outline-danger fw-bold" onclick="firebaseLogout()">
+                <i class="fas fa-sign-out-alt me-1"></i> تسجيل خروج
+            </button>
+            <button class="btn btn-secondary fw-bold" onclick="closeContractOverlay()">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
+    <div class="contract-paper" dir="rtl">
+        <div class="contract-header">
+            <div>
+                <div class="contract-title">عقد تقديم خدمات تقنية</div>
+                <div class="text-muted small mt-1">OPTIWISE TECH SOLUTIONS</div>
+            </div>
+            <div class="text-end">
+                <span class="contract-badge">مسودة عقد رسمي</span>
+                <div class="small text-muted mt-2" id="contractDate">التاريخ: 2026</div>
             </div>
         </div>
 
-        <!-- وثيقة العقد الرسمية -->
-        <div class="contract-paper">
-            <div class="contract-header">
-                <div>
-                    <h2 class="contract-title">عقد تقديم خدمات وتقنية معلومات</h2>
-                    <span class="text-muted small">رقم الاتفاقية: OPT-2026-9941</span>
-                </div>
-                <!-- الشعار المضاف في أعلى يمين العقد -->
-                <div>
-                    <img src="banner3.jpg" alt="OPTIWISE Logo" class="contract-logo">
-                </div>
-            </div>
+        <div class="contract-section">
+            <h5>أولاً: أطراف العقد</h5>
+            <p class="small mb-2"><strong>الطرف الأول:</strong> مؤسسة/شركة OPTIWISE للحلول التقنية، ومقرها الدمام - حي الفيصلية.</p>
+            <p class="small mb-0"><strong>الطرف الثاني (العميل):</strong> <span contenteditable="true" class="border-bottom border-primary px-2 text-primary fw-bold">[اكتب اسم العميل أو الشركة هنا]</span></p>
+        </div>
 
-            <!-- الطرف الأول -->
-            <div class="contract-section">
-                <h5>الطرف الأول (المقدم للخدمة)</h5>
-                <table class="contract-table">
+        <div class="contract-section">
+            <h5>ثانياً: نطاق العمل والخدمات</h5>
+            <table class="contract-table">
+                <thead>
                     <tr>
-                        <th width="30%">اسم الشركة:</th>
-                        <td>شركة أوبتي اويز للحلول التقنية (OPTIWISE TECH SOLUTIONS)</td>
+                        <th>البند / الخدمة</th>
+                        <th>التفاصيل</th>
+                        <th>التكلفة (ر.س)</th>
                     </tr>
+                </thead>
+                <tbody>
                     <tr>
-                        <th>السجل التجاري:</th>
-                        <td>7055470707</td>
+                        <td contenteditable="true">تطوير موقع إلكتروني / نظام</td>
+                        <td contenteditable="true">تصميم وتطوير متكامل متجاوب مع جميع الشاشات</td>
+                        <td contenteditable="true">0.00</td>
                     </tr>
-                    <tr>
-                        <th>المقر الرسمي:</th>
-                        <td>الدمام - حي الفيصلية - طريق أبو بكر الصديق</td>
-                    </tr>
-                    <tr>
-                        <th>البريد الإلكتروني:</th>
-                        <td>contact@optiwisetech.com</td>
-                    </tr>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
 
-            <!-- الطرف الثاني -->
-            <div class="contract-section">
-                <h5>الطرف الثاني (العميل / الشريك)</h5>
-                <table class="contract-table">
-                    <tr>
-                        <th width="30%">اسم المنشأة / العميل:</th>
-                        <td>الجهة المستفيدة المعتمدة</td>
-                    </tr>
-                    <tr>
-                        <th>الرقم الضريبي / السجل:</th>
-                        <td>مُسجل بالنظام الإلكتروني للطرفين</td>
-                    </tr>
-                    <tr>
-                        <th>نطاق العمل:</th>
-                        <td>تطوير حلول برمجة، تحول رقمي، وتطبيقات ويب سحابية.</td>
-                    </tr>
-                </table>
+        <div class="contract-signatures">
+            <div class="signature-box">
+                <p class="fw-bold mb-1">توقيع الطرف الأول (OPTIWISE)</p>
+                <p class="text-muted small">الإدارة التنفيذية</p>
             </div>
-
-            <!-- البنود والشروط -->
-            <div class="contract-section">
-                <h5>بنود الاتفاقية والالتزامات</h5>
-                <ol class="small text-secondary lh-lg ps-3 mb-0" style="color: #374151 !important;">
-                    <li>يلتزم الطرف الأول بتقديم الحلول التقنية المتفق عليها وفق أحدث معايير التشفير والأمان البرمجي.</li>
-                    <li>جميع البيانات والمعلومات البرمجية الناتجة عن الاتفاقية تعتبر ملكية خاصة ومحفوفة بالسرية التامة.</li>
-                    <li>تخضع الفواتير الإلكترونية المتبادلة بين الطرفين للائحة هيئة الزكاة والضريبة والجمارك (ZATCA - الفاتورة الإلكترونية).</li>
-                    <li>يسري هذا العقد فور التوقيع الإلكتروني والاعتماد المتبادل عبر المنصة.</li>
-                    <li>........................................................................................................................</li>
-                    <li>........................................................................................................................</li>
-                    <li>........................................................................................................................</li>
-                    <li>........................................................................................................................</li>
-                </ol>
-            </div>
-
-            <!-- التوقيعات والختم -->
-            <div class="contract-signatures">
-                <div class="signature-box">
-                    <h6 class="fw-bold mb-1">توقيع الطرف الأول</h6>
-                    <span class="small text-muted">OPTIWISE Tech Solutions</span>
-                    <!-- الختم الجديد المضاف (banner2.png) -->
-                    <img src="banner2.png" alt="Company Stamp" class="company-stamp-img">
-                </div>
-                <div class="signature-box">
-                    <h6 class="fw-bold mb-1">توقيع وموافقة الطرف الثاني</h6>
-                    <span class="small text-muted">الجهة المستفيدة</span>
-                    <div class="mt-4 pt-3 border-top border-dark mx-auto" style="width: 70%;">
-                        <span class="small text-muted">التوقيع الإلكتروني مفعّل</span>
-                    </div>
-                </div>
+            <div class="signature-box">
+                <p class="fw-bold mb-1">توقيع الطرف الثاني (العميل)</p>
+                <p class="text-muted small">الاسم والتوقيع والختم</p>
             </div>
         </div>
     </div>
@@ -1153,313 +1071,223 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Scripts -->
+<!-- Main Site Scripts (Counters, Language Switcher, Contact Form) -->
 <script>
-    const WEB3FORMS_ACCESS_KEY = "f9500155-3db2-47f1-8c38-f602d253f86c";
-    const FIXED_TARGET_EMAIL = "contact@optiwisetech.com";
+    // 1. فتح نافذة تسجيل الدخول أو العقود إذا كان مسجلاً بالفعل
+    function openAdminModal() {
+        if (window.currentUser) {
+            document.getElementById('contractOverlay').style.display = 'block';
+        } else {
+            const loginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+            loginModal.show();
+        }
+    }
 
-    const allowedEmails = [
-        "contact@optiwisetech.com",
-        "admin@optiwisetech.com",
-        "ceo@optiwisetech.com"
-    ];
+    function closeContractOverlay() {
+        document.getElementById('contractOverlay').style.display = 'none';
+    }
 
-    let generatedOtpCode = "";
+    // 2. العدادات المتحركة
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        const updateCount = () => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const inc = target / 60;
+            if (count < target) {
+                counter.innerText = Math.ceil(count + inc);
+                setTimeout(updateCount, 30);
+            } else {
+                counter.innerText = "+" + target;
+            }
+        };
+        updateCount();
+    });
 
-    // نظام الترجمة (عربي / إنجليزي)
+    // 3. إرسال نموذج التواصل (Web3Forms)
+    const contactForm = document.getElementById('form');
+    const formResult = document.getElementById('formResult');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(contactForm);
+            formResult.style.display = 'block';
+            formResult.className = 'mt-3 text-center fw-bold text-info';
+            formResult.innerText = 'جاري إرسال رسالتك...';
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    formResult.className = 'mt-3 text-center fw-bold text-success';
+                    formResult.innerText = 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.';
+                    contactForm.reset();
+                } else {
+                    formResult.className = 'mt-3 text-center fw-bold text-danger';
+                    formResult.innerText = 'حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.';
+                }
+            })
+            .catch(() => {
+                formResult.className = 'mt-3 text-center fw-bold text-danger';
+                formResult.innerText = 'تعذر الاتصال بالخادم.';
+            });
+        });
+    }
+
+    // 4. تبديل اللغة (عربي / إنجليزي)
+    let currentLang = 'ar';
     const translations = {
-        ar: {
-            pageTitle: "OPTIWISE | حلول تقنية",
-            nav_home: "الرئيسية",
-            nav_about: "من نحن",
-            nav_services: "خدماتنا",
-            nav_contact: "تواصل معنا",
-            nav_admin_btn: "عقود الإدارة",
-            nav_btn: "ابدأ مشروعك معنا",
-            hero_title: "نصنع المستقبل<br><span>بالحلول التقنية</span>",
-            hero_desc: "نحول أفكارك إلى حلول رقمية مبتكرة، ونساعد أعمالك على النمو من خلال التكنولوجيا والتطوير والتحول الرقمي.",
-            hero_cta: "اكتشف خدماتنا",
-            stat_1: "مشروع تقني",
-            stat_2: "شريك نجاح",
-            stat_3: "عميل مستفيد",
-            about_label: "ABOUT OPTIWISE",
-            about_title: "شريكك في <span>التحول الرقمي</span>",
-            about_desc: "في OPTIWISE نؤمن بأن التقنية ليست مجرد أدوات، بل هي وسيلة لصناعة فرص جديدة وتطوير الأعمال. نعمل على تقديم حلول تقنية مبتكرة تساعد المؤسسات والشركات على تحقيق أهدافها ورفع كفاءة عملياتها.",
-            about_feat1_title: "حلول تقنية مبتكرة",
-            about_feat1_desc: "تقنيات حديثة تلبي احتياجات أعمالك.",
-            about_feat2_title: "جودة واحترافية",
-            about_feat2_desc: "نهتم بالتفاصيل وجودة التنفيذ.",
-            serv_heading: "خدماتنا التقنية",
-            serv_subheading: "نقدم مجموعة من الحلول والخدمات التقنية لتطوير أعمالك",
-            serv_1_title: "تطوير البرمجيات",
-            serv_1_desc: "تطوير الأنظمة والبرمجيات المخصصة وفق احتياجات ومتطلبات الأعمال.",
-            serv_2_title: "المواقع الإلكترونية",
-            serv_2_desc: "تصميم وتطوير مواقع إلكترونية احترافية وعصرية ومتوافقة مع جميع الأجهزة.",
-            serv_3_title: "تطبيقات الجوال",
-            serv_3_desc: "تطوير تطبيقات ذكية توفر تجربة استخدام مميزة وسهلة.",
-            serv_4_title: "الأنظمة الإدارية",
-            serv_4_desc: "حلول لإدارة العمليات والموارد وتحسين كفاءة العمل.",
-            serv_5_title: "الحلول السحابية",
-            serv_5_desc: "تقديم حلول تقنية مرنة تساعد على تطوير البنية الرقمية للأعمال.",
-            serv_6_title: "الاستشارات التقنية",
-            serv_6_desc: "مساعدتك في اختيار التقنيات المناسبة وتطوير استراتيجيتك الرقمية.",
-            contact_heading: "لنتحدث عن مشروعك",
-            contact_subheading: "يسعدنا التواصل معك ومناقشة أفكارك ومشاريعك",
-            contact_info_title: "معلومات التواصل",
-            contact_phone_label: "رقم الجوال / واتساب",
-            contact_email_label: "البريد الإلكتروني",
-            contact_loc_label: "موقعنا",
-            contact_loc_val: "الدمام - حي الفيصلية - طريق أبو بكر الصديق",
-            form_name: "الاسم الكامل",
-            form_email: "البريد الإلكتروني",
-            form_subject: "موضوع الرسالة",
-            form_msg: "اكتب رسالتك هنا...",
-            form_submit: "إرسال الرسالة",
-            footer_desc: "OPTIWISE TECH SOLUTIONS<br>نصنع حلولاً تقنية مبتكرة تساهم في تطوير الأعمال وصناعة المستقبل الرقمي.",
-            footer_links_title: "روابط سريعة",
-            footer_address: "الدمام - حي الفيصلية",
-            footer_road: "طريق أبو بكر الصديق",
-            copyright: "جميع الحقوق محفوظة © 2026 OPTIWISE TECH SOLUTIONS"
-        },
         en: {
-            pageTitle: "OPTIWISE | Tech Solutions",
             nav_home: "Home",
             nav_about: "About Us",
             nav_services: "Services",
-            nav_contact: "Contact Us",
+            nav_contact: "Contact",
             nav_admin_btn: "Admin Contracts",
-            nav_btn: "Start Your Project",
-            hero_title: "Shaping the Future<br><span>With Tech Solutions</span>",
-            hero_desc: "We turn your ideas into innovative digital solutions, helping your business grow through technology, development, and digital transformation.",
+            nav_btn: "Start Project",
+            hero_title: "Shaping the Future <br><span>With Tech Solutions</span>",
+            hero_desc: "We turn your ideas into innovative digital solutions, helping your business grow through technology and digital transformation.",
             hero_cta: "Explore Services",
             stat_1: "Tech Projects",
             stat_2: "Success Partners",
-            stat_3: "Happy Clients",
-            about_label: "ABOUT OPTIWISE",
+            stat_3: "Satisfied Clients",
             about_title: "Your Partner in <span>Digital Transformation</span>",
-            about_desc: "At OPTIWISE, we believe technology is not just a tool, but a way to create new opportunities and grow businesses. We provide innovative tech solutions helping organizations achieve their goals.",
-            about_feat1_title: "Innovative Tech Solutions",
-            about_feat1_desc: "Modern tech tailored to your business needs.",
+            about_desc: "At OPTIWISE, we believe technology is a way to create new opportunities and grow businesses efficiently.",
+            about_feat1_title: "Innovative Solutions",
+            about_feat1_desc: "Modern technologies tailored to your business needs.",
             about_feat2_title: "Quality & Professionalism",
-            about_feat2_desc: "We care about details and execution quality.",
+            about_feat2_desc: "Attention to detail and high-standard execution.",
             serv_heading: "Our Tech Services",
-            serv_subheading: "We offer a range of technical solutions to grow your business",
+            serv_subheading: "A wide range of digital solutions to scale your business",
             serv_1_title: "Software Development",
-            serv_1_desc: "Developing custom systems and software matching business requirements.",
+            serv_1_desc: "Custom software and enterprise systems built for your workflow.",
             serv_2_title: "Websites",
-            serv_2_desc: "Designing and developing professional, modern, and responsive websites.",
+            serv_2_desc: "Modern, responsive, and professional web development.",
             serv_3_title: "Mobile Apps",
-            serv_3_desc: "Developing smart apps that provide a unique and easy user experience.",
-            serv_4_title: "Administrative Systems",
-            serv_4_desc: "Solutions for managing operations and resources efficiently.",
+            serv_3_desc: "Smart mobile applications with seamless user experience.",
+            serv_4_title: "Management Systems",
+            serv_4_desc: "ERP and resource management solutions to boost productivity.",
             serv_5_title: "Cloud Solutions",
-            serv_5_desc: "Providing flexible tech solutions to develop your digital infrastructure.",
+            serv_5_desc: "Flexible cloud infrastructure for scalable digital growth.",
             serv_6_title: "Tech Consulting",
-            serv_6_desc: "Helping you choose the right technologies and build your digital strategy.",
+            serv_6_desc: "Helping you choose the right tech stack and digital strategy.",
             contact_heading: "Let's Talk About Your Project",
-            contact_subheading: "We are delighted to hear from you and discuss your ideas",
+            contact_subheading: "We are happy to connect and discuss your ideas",
             contact_info_title: "Contact Information",
             contact_phone_label: "Mobile / WhatsApp",
-            contact_email_label: "Email",
-            contact_loc_label: "Location",
-            contact_loc_val: "Dammam - Al Faisaliyah - Abu Bakr As-Siddiq Rd",
-            form_name: "Full Name",
-            form_email: "Email Address",
-            form_subject: "Subject",
-            form_msg: "Write your message here...",
+            contact_email_label: "Email Address",
+            contact_loc_label: "Our Location",
+            contact_loc_val: "Dammam - Al Faisaliyah - Abu Bakr Al Siddiq Rd",
             form_submit: "Send Message",
-            footer_desc: "OPTIWISE TECH SOLUTIONS<br>Crafting innovative digital solutions to shape the future of business.",
             footer_links_title: "Quick Links",
             footer_address: "Dammam - Al Faisaliyah",
-            footer_road: "Abu Bakr As-Siddiq Rd",
+            footer_road: "Abu Bakr Al Siddiq Rd",
             copyright: "All Rights Reserved © 2026 OPTIWISE TECH SOLUTIONS"
         }
     };
 
-    let currentLang = "ar";
+    const originalAr = {};
+    document.querySelectorAll('[data-key]').forEach(el => {
+        originalAr[el.getAttribute('data-key')] = el.innerHTML;
+    });
 
     function toggleLanguage() {
-        currentLang = currentLang === "ar" ? "en" : "ar";
-        const html = document.getElementById("htmlTag");
-        const btn = document.getElementById("langToggleBtn");
-        const bootstrapCss = document.getElementById("bootstrapCSS");
-        const heroIcon = document.getElementById("heroIcon");
+        const htmlTag = document.getElementById('htmlTag');
+        const langBtn = document.getElementById('langToggleBtn');
+        const bsCss = document.getElementById('bootstrapCSS');
 
-        if (currentLang === "en") {
-            html.setAttribute("dir", "ltr");
-            html.setAttribute("lang", "en");
-            btn.textContent = "العربية";
-            bootstrapCss.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
-            if (heroIcon) heroIcon.className = "fas fa-arrow-right ms-2";
-        } else {
-            html.setAttribute("dir", "rtl");
-            html.setAttribute("lang", "ar");
-            btn.textContent = "English";
-            bootstrapCss.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css";
-            if (heroIcon) heroIcon.className = "fas fa-arrow-left ms-2";
-        }
-
-        document.querySelectorAll("[data-key]").forEach(el => {
-            const key = el.getAttribute("data-key");
-            if (translations[currentLang][key]) {
-                el.innerHTML = translations[currentLang][key];
-            }
-        });
-
-        document.querySelectorAll("[data-placeholder]").forEach(el => {
-            const key = el.getAttribute("data-placeholder");
-            if (translations[currentLang][key]) {
-                el.placeholder = translations[currentLang][key];
-            }
-        });
-    }
-
-    // العداد الديناميكي للأرقام
-    const counters = document.querySelectorAll('.counter');
-    let hasAnimated = false;
-
-    window.addEventListener('scroll', () => {
-        const statsSection = document.querySelector('.stats');
-        if (!statsSection) return;
-        const position = statsSection.getBoundingClientRect();
-
-        if (position.top < window.innerHeight && !hasAnimated) {
-            hasAnimated = true;
-            counters.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                let count = 0;
-                const speed = target / 50;
-
-                const updateCount = () => {
-                    count += speed;
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count) + "+";
-                        setTimeout(updateCount, 30);
-                    } else {
-                        counter.innerText = target + "+";
-                    }
-                };
-                updateCount();
+        if (currentLang === 'ar') {
+            currentLang = 'en';
+            htmlTag.setAttribute('lang', 'en');
+            htmlTag.setAttribute('dir', 'ltr');
+            langBtn.innerText = 'العربية';
+            bsCss.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations.en[key]) el.innerHTML = translations.en[key];
             });
+        } else {
+            currentLang = 'ar';
+            htmlTag.setAttribute('lang', 'ar');
+            htmlTag.setAttribute('dir', 'rtl');
+            langBtn.innerText = 'English';
+            bsCss.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css';
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (originalAr[key]) el.innerHTML = originalAr[key];
+            });
+        }
+    }
+</script>
+
+<!-- Firebase Authentication Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyALg9Lt9VpRdwRfU7ookg5egufXx92mKHc",
+        authDomain: "optiwise-portal.firebaseapp.com",
+        projectId: "optiwise-portal",
+        storageBucket: "optiwise-portal.firebasestorage.app",
+        messagingSenderId: "479903648664",
+        appId: "1:479903648664:web:28a3754085f41af47639ed",
+        measurementId: "G-CE0EPKPMZS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    window.currentUser = null;
+
+    // مراقبة حالة تسجيل الدخول تلقائياً
+    onAuthStateChanged(auth, (user) => {
+        window.currentUser = user;
+        const badge = document.getElementById('loggedInUserBadge');
+        if (user && badge) {
+            badge.innerText = `متصل كـ: ${user.email}`;
         }
     });
 
-    // ربط نموذج التواصل بـ Web3Forms
-    document.getElementById('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
+    // دالة تسجيل الدخول
+    window.firebaseLogin = async function(event) {
+        event.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorBox = document.getElementById('loginError');
+        const submitBtn = document.getElementById('loginSubmitBtn');
 
-        fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            body: formData
-        })
-        .then(async (response) => {
-            let json = await response.json();
-            if (response.status == 200) {
-                alert('تم إرسال رسالتك بنجاح! سنقوم بالتواصل معك قريباً.');
-                this.reset();
-            } else {
-                alert(json.message || 'حدث خطأ في الإرسال.');
-            }
-        })
-        .catch(error => {
-            alert('حدث خطأ أثناء الاتصال، يرجى المحاولة لاحقاً.');
-        });
-    });
+        errorBox.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'جاري التحقق...';
 
-    // وظائف OTP وإرسال الرمز للإيميل الثابت
-    let adminModalInstance = null;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
 
-    function openAdminModal() {
-        resetModalSteps();
-        adminModalInstance = new bootstrap.Modal(document.getElementById('adminOtpModal'));
-        adminModalInstance.show();
-    }
+            // إغلاق نافذة تسجيل الدخول
+            const modalEl = document.getElementById('adminLoginModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
 
-    function resetModalSteps() {
-        document.getElementById('emailStep').classList.remove('d-none');
-        document.getElementById('otpStep').classList.add('d-none');
-        document.getElementById('emailError').classList.add('d-none');
-        document.getElementById('otpError').classList.add('d-none');
-        document.getElementById('adminEmailInput').value = '';
-        document.querySelectorAll('.otp-field').forEach(input => input.value = '');
-    }
-
-    function sendOtpCode() {
-        const emailInput = document.getElementById('adminEmailInput').value.trim().toLowerCase();
-        const emailError = document.getElementById('emailError');
-        const sendBtnText = document.getElementById('sendOtpBtnText');
-
-        if (allowedEmails.includes(emailInput) || emailInput.endsWith("@optiwisetech.com")) {
-            emailError.classList.add('d-none');
-            
-            // توليد رمز OTP من 6 أرقام
-            generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-            sendBtnText.innerText = "جاري الإرسال...";
-
-            // إرسال كود OTP عبر Web3Forms حصرياً إلى contact@optiwisetech.com
-            fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    access_key: WEB3FORMS_ACCESS_KEY,
-                    subject: "رمز التحقق OTP - دخول نظام العقود | OPTIWISE",
-                    from_name: "OPTIWISE Security",
-                    to_email: FIXED_TARGET_EMAIL,
-                    message: `تم طلب رمز تحقق لدخول نظام العقود بواسطة البريد: ${emailInput}\n\nرمز التحقق الخاص بك هو: ${generatedOtpCode}\n\nيرجى عدم مشاركة هذا الرمز مع أي شخص.`
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                sendBtnText.innerText = "إرسال رمز التحقق OTP";
-                document.getElementById('emailStep').classList.add('d-none');
-                document.getElementById('otpStep').classList.remove('d-none');
-            })
-            .catch(err => {
-                sendBtnText.innerText = "إرسال رمز التحقق OTP";
-                document.getElementById('emailStep').classList.add('d-none');
-                document.getElementById('otpStep').classList.remove('d-none');
-            });
-
-        } else {
-            emailError.classList.add('d-none'); // تم التسهيل لقبول أي بريد ينتهي بالنطاق
-        }
-    }
-
-    function moveOtpFocus(element, index, event) {
-        const inputs = document.querySelectorAll('.otp-field');
-        if (event.key === "Backspace" && index > 0 && element.value === '') {
-            inputs[index - 1].focus();
-        } else if (element.value.length === 1 && index < 5) {
-            inputs[index + 1].focus();
-        }
-    }
-
-    function verifyOtpCode() {
-        let enteredOtp = '';
-        document.querySelectorAll('.otp-field').forEach(input => enteredOtp += input.value);
-        const otpError = document.getElementById('otpError');
-
-        if (enteredOtp === generatedOtpCode || enteredOtp === "123456") {
-            otpError.classList.add('d-none');
-            if (adminModalInstance) adminModalInstance.hide();
-            
-            // فتح وثيقة العقد
+            // فتح بوابة العقود مباشرة بعد نجاح الدخول
             document.getElementById('contractOverlay').style.display = 'block';
-        } else {
-            otpError.classList.add('d-none'); // تجاوز مؤقت لاختبار الدخول بسلاسة إذا لزم الأمر
-            if (adminModalInstance) adminModalInstance.hide();
-            document.getElementById('contractOverlay').style.display = 'block';
-        }
-    }
+            document.getElementById('loginPassword').value = '';
 
-    function closeContract() {
+        } catch (error) {
+            errorBox.style.display = 'block';
+            errorBox.innerText = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+            console.error(error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'تسجيل الدخول';
+        }
+    };
+
+    // دالة تسجيل الخروج
+    window.firebaseLogout = async function() {
+        await signOut(auth);
         document.getElementById('contractOverlay').style.display = 'none';
-    }
+    };
 </script>
 
 </body>
