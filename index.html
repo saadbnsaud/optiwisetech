@@ -1411,12 +1411,11 @@
     }
 </script>
 
-<!-- Firebase Authentication & Firestore / Storage Script -->
+<!-- Firebase Authentication & Firestore Script (بدون الحاجة لـ Storage) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyALg9Lt9VpRdwRfU7ookg5egufXx92mKHc",
@@ -1431,7 +1430,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
     window.currentUser = null;
 
     onAuthStateChanged(auth, (user) => {
@@ -1477,7 +1475,7 @@
         document.getElementById('contractOverlay').style.display = 'none';
     };
 
-    // جلب وحساب رقم الفاتورة التزايدي وعرض الجدول سحابياً
+    // جلب الفواتير وحساب الرقم التزايدي سحابياً من Firestore
     window.loadInvoicesFromFirestore = async function() {
         const tbody = document.getElementById('invoicesTableBody');
         const nextNumInput = document.getElementById('invNumber');
@@ -1525,7 +1523,7 @@
                         <img src="${inv.imageUrl}" class="invoice-thumb" alt="فاتورة" onclick="previewInvoiceImage('${inv.invoiceNumber}', '${inv.imageUrl}')" title="اضغط لتكبير الصورة">
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteInvoiceFromFirestore('${inv.id}', '${inv.imagePath}')" title="حذف الفاتورة">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteInvoiceFromFirestore('${inv.id}')" title="حذف الفاتورة">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -1539,7 +1537,7 @@
         }
     };
 
-    // رفع الفاتورة وصورتها إلى فايربيز (Firestore + Storage)
+    // حفظ الفاتورة وصورتها مباشرة داخل Firestore كـ Base64 (بدون Storage نهائياً)
     window.addInvoiceToFirestore = async function(event) {
         event.preventDefault();
         const invNumber = document.getElementById('invNumber').value;
@@ -1554,49 +1552,42 @@
         const file = fileInput.files[0];
 
         saveBtn.disabled = true;
-        saveBtn.innerText = 'جاري الرفع للسحابة...';
+        saveBtn.innerText = 'جاري المعالجة والحفظ...';
 
-        try {
-            // 1. رفع الصورة إلى Firebase Storage
-            const imagePath = `invoices/${Date.now()}_${file.name}`;
-            const storageRef = ref(storage, imagePath);
-            await uploadBytes(storageRef, file);
-            const imageUrl = await getDownloadURL(storageRef);
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const base64Image = e.target.result;
 
-            // 2. حفظ بيانات الفاتورة متضمنة المبلغ في Firestore
-            await addDoc(collection(db, "invoices"), {
-                invoiceNumber: Number(invNumber),
-                type: invType,
-                amount: Number(invAmount),
-                owner: invOwner,
-                notes: invNotes,
-                imageUrl: imageUrl,
-                imagePath: imagePath,
-                createdAt: new Date()
-            });
+                // حفظ المستند بالكامل في Firestore
+                await addDoc(collection(db, "invoices"), {
+                    invoiceNumber: Number(invNumber),
+                    type: invType,
+                    amount: Number(invAmount),
+                    owner: invOwner,
+                    notes: invNotes,
+                    imageUrl: base64Image,
+                    createdAt: new Date()
+                });
 
-            document.getElementById('invoiceForm').reset();
-            loadInvoicesFromFirestore();
-        } catch (error) {
-            console.error("Error adding invoice:", error);
-            alert('حدث خطأ أثناء حفظ الفاتورة. تأكد من تفعيل Firestore Storage وتعديل Rules.');
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> حفظ الفاتورة';
-        }
+                document.getElementById('invoiceForm').reset();
+                loadInvoicesFromFirestore();
+            } catch (error) {
+                console.error("Error adding invoice:", error);
+                alert('حدث خطأ أثناء حفظ الفاتورة في قاعدة البيانات.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> حفظ الفاتورة';
+            }
+        };
+        reader.readAsDataURL(file);
     };
 
-    // حذف الفاتورة وصورتها من السحابة
-    window.deleteInvoiceFromFirestore = async function(docId, imagePath) {
-        if (confirm('هل أنت متأكد من حذف هذه الفاتورة من السحابة نهائياً؟')) {
+    // حذف الفاتورة من Firestore
+    window.deleteInvoiceFromFirestore = async function(docId) {
+        if (confirm('هل أنت متأكد من حذف هذه الفاتورة نهائياً؟')) {
             try {
                 await deleteDoc(doc(db, "invoices", docId));
-
-                if (imagePath) {
-                    const imageRef = ref(storage, imagePath);
-                    await deleteObject(imageRef).catch(e => console.log(e));
-                }
-
                 loadInvoicesFromFirestore();
             } catch (err) {
                 console.error("Error deleting:", err);
