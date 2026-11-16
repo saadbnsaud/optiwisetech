@@ -688,6 +688,14 @@
             width: 45%;
         }
 
+        .contract-sign-img {
+            max-height: 70px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            margin: 8px auto 0 auto;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -1304,7 +1312,7 @@
         <div class="contract-section">
             <h5>أولاً: أطراف العقد</h5>
             <p class="small mb-2"><strong>الطرف الأول:</strong> مؤسسة/شركة OPTIWISE للحلول التقنية، ومقرها الدمام - حي الفيصلية.</p>
-            <p class="small mb-0"><strong>الطرف الثاني (الشركه العميل):</strong> <span id="printCompanyName" class="text-primary fw-bold">--</span></p>
+            <p class="small mb-0"><strong>الطرف الثاني (الشركة العميل):</strong> <span id="printCompanyName" class="text-primary fw-bold">--</span></p>
         </div>
 
         <div class="contract-section">
@@ -1330,10 +1338,13 @@
         <div class="contract-signatures">
             <div class="signature-box">
                 <p class="fw-bold mb-1">توقيع الطرف الأول (OPTIWISE)</p>
-                <p class="text-muted small">الإدارة التنفيذية</p>
+                <!-- صورة التوقيع sign.png -->
+                <img src="sign.png" alt="توقيع اوبتي وايز" class="contract-sign-img">
+                <p class="text-muted small mt-1">الإدارة التنفيذية</p>
             </div>
             <div class="signature-box">
                 <p class="fw-bold mb-1">توقيع الطرف الثاني (الشركة العميل)</p>
+                <div style="height: 50px;"></div>
                 <p class="text-muted small" id="printSignCompany">ختم وتوقيع الشركة</p>
             </div>
         </div>
@@ -1584,7 +1595,6 @@
 
             if (countBadge) countBadge.innerText = `${invoices.length} فواتير`;
             
-            // حساب مجاميع فهد وسعد
             let fahdCount = 0, fahdSum = 0;
             let saadCount = 0, saadSum = 0;
 
