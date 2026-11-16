@@ -1135,8 +1135,8 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small text-secondary">صورة الفاتورة</label>
-                            <input type="file" id="invImage" class="form-control mb-0" accept="image/*" required>
+                            <label class="form-label small text-secondary">ملف الفاتورة (صور أو PDF)</label>
+                            <input type="file" id="invImage" class="form-control mb-0" accept="image/*,.pdf" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-secondary">ملاحظات</label>
@@ -1170,7 +1170,7 @@
                                 <th>المبلغ</th>
                                 <th>صاحب الفاتورة</th>
                                 <th>ملاحظات</th>
-                                <th>صورة الفاتورة</th>
+                                <th>ملف الفاتورة</th>
                                 <th style="width: 80px;">إجراء</th>
                             </tr>
                         </thead>
@@ -1192,8 +1192,8 @@
                 <h6 class="modal-title fw-bold" id="previewModalTitle">معاينة الفاتورة</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body text-center">
-                <img id="previewModalImg" src="" alt="صورة الفاتورة" class="img-fluid rounded" style="max-height: 75vh;">
+            <div class="modal-body text-center" id="previewContainer">
+                <!-- سيتم عرض الصورة أو الابط هنا -->
             </div>
         </div>
     </div>
@@ -1300,9 +1300,16 @@
         document.getElementById('adminDashboardOverlay').style.display = 'block';
     }
 
-    function previewInvoiceImage(invNumber, imgSrc) {
-        document.getElementById('previewModalTitle').innerText = `صورة الفاتورة رقم #${invNumber}`;
-        document.getElementById('previewModalImg').src = imgSrc;
+    function previewInvoiceFile(invNumber, fileUrl, fileType) {
+        document.getElementById('previewModalTitle').innerText = `معاينة الفاتورة رقم #${invNumber}`;
+        const container = document.getElementById('previewContainer');
+        
+        if (fileType && fileType.includes('pdf')) {
+            container.innerHTML = `<iframe src="${fileUrl}" width="100%" height="500px" style="border:none; border-radius:8px;"></iframe><a href="${fileUrl}" target="_blank" class="btn btn-sm btn-primary mt-3">فتح المستند في تبويب جديد</a>`;
+        } else {
+            container.innerHTML = `<img src="${fileUrl}" alt="صورة الفاتورة" class="img-fluid rounded" style="max-height: 75vh;">`;
+        }
+
         const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
         modal.show();
     }
@@ -1411,7 +1418,7 @@
     }
 </script>
 
-<!-- Firebase Authentication & Firestore Script (بدون الحاجة لـ Storage) -->
+<!-- Firebase Authentication & Firestore Script -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1512,6 +1519,7 @@
 
             invoices.forEach((inv, index) => {
                 const row = document.createElement('tr');
+                const isPdf = inv.fileType && inv.fileType.includes('pdf');
                 row.innerHTML = `
                     <td class="fw-bold text-secondary">${index + 1}</td>
                     <td><span class="badge bg-info bg-opacity-25 text-info fs-6">#${inv.invoiceNumber}</span></td>
@@ -1520,7 +1528,10 @@
                     <td class="fw-bold">${inv.owner}</td>
                     <td class="text-light">${inv.notes || '-'}</td>
                     <td>
-                        <img src="${inv.imageUrl}" class="invoice-thumb" alt="فاتورة" onclick="previewInvoiceImage('${inv.invoiceNumber}', '${inv.imageUrl}')" title="اضغط لتكبير الصورة">
+                        ${isPdf ? 
+                            `<button class="btn btn-sm btn-outline-info" onclick="previewInvoiceFile('${inv.invoiceNumber}', '${inv.imageUrl}', '${inv.fileType}')"><i class="fas fa-file-pdf"></i> عرض PDF</button>` :
+                            `<img src="${inv.imageUrl}" class="invoice-thumb" alt="فاتورة" onclick="previewInvoiceFile('${inv.invoiceNumber}', '${inv.imageUrl}', '${inv.fileType}')" title="اضغط لتكبير الصورة">`
+                        }
                     </td>
                     <td>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteInvoiceFromFirestore('${inv.id}')" title="حذف الفاتورة">
@@ -1537,7 +1548,7 @@
         }
     };
 
-    // حفظ الفاتورة وصورتها مباشرة داخل Firestore كـ Base64 (بدون Storage نهائياً)
+    // حفظ الفاتورة وملفها (سواء صورة أو PDF) مباشرة داخل Firestore
     window.addInvoiceToFirestore = async function(event) {
         event.preventDefault();
         const invNumber = document.getElementById('invNumber').value;
@@ -1552,21 +1563,21 @@
         const file = fileInput.files[0];
 
         saveBtn.disabled = true;
-        saveBtn.innerText = 'جاري المعالجة والحفظ...';
+        saveBtn.innerText = 'جاري الحفظ الفوري...';
 
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
-                const base64Image = e.target.result;
+                const base64File = e.target.result;
 
-                // حفظ المستند بالكامل في Firestore
                 await addDoc(collection(db, "invoices"), {
                     invoiceNumber: Number(invNumber),
                     type: invType,
                     amount: Number(invAmount),
                     owner: invOwner,
                     notes: invNotes,
-                    imageUrl: base64Image,
+                    imageUrl: base64File,
+                    fileType: file.type,
                     createdAt: new Date()
                 });
 
@@ -1574,7 +1585,7 @@
                 loadInvoicesFromFirestore();
             } catch (error) {
                 console.error("Error adding invoice:", error);
-                alert('حدث خطأ أثناء حفظ الفاتورة في قاعدة البيانات.');
+                alert('حدث خطأ أثناء حفظ الفاتورة.');
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> حفظ الفاتورة';
@@ -1584,7 +1595,7 @@
     };
 
     // حذف الفاتورة من Firestore
-    window.deleteInvoiceFromFirestore = async function(docId) {
+    window.updateDeleteInvoiceFromFirestore = window.deleteInvoiceFromFirestore = async function(docId) {
         if (confirm('هل أنت متأكد من حذف هذه الفاتورة نهائياً؟')) {
             try {
                 await deleteDoc(doc(db, "invoices", docId));
