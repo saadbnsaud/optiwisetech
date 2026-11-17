@@ -1282,7 +1282,7 @@
     </div>
 </div>
 
-<!-- Modal لعرض الملفات بالمتصفح مباشرة بدون تنزيل اجباري -->
+<!-- نافذة المعاينة المباشرة (Modal) -->
 <div class="modal fade" id="fileViewerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content dark-modal p-3">
@@ -1291,7 +1291,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center" style="min-height: 500px;" id="fileViewerBody">
-                <!-- سيتم حقن الصورة أو الـ PDF هنا -->
+                <!-- سيتم عرض الصورة أو ملف الـ PDF هنا فوراً -->
             </div>
         </div>
     </div>
@@ -1645,7 +1645,7 @@
                     <td class="text-light">${inv.notes || '-'}</td>
                     <td>
                         <div class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="openFileInModal(${index})" title="فتح في المتصفح">
+                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="openFileInModal(${index})" title="معاينة الملف">
                                 <i class="fas ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> فتح
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFileDirectly(${index})" title="تحميل">
@@ -1667,7 +1667,7 @@
         }
     };
 
-    // 1. زر الفتح (يفتح الملف داخل نافذة المعاينة بالمتصفح مباشرة دون تحميل)
+    // 1. زر الفتح (يفتح الملف داخل نافذة المعاينة بالصفحة مباشرة بدون تنزيل وبدون حظر المتصفح)
     window.openFileInModal = function(index) {
         const inv = window.loadedInvoices[index];
         if (!inv || !inv.imageUrl) {
@@ -1886,7 +1886,7 @@
     window.deleteInvoiceFromFirestore = async function(docId) {
         if (confirm('هل أنت متأكد من حذف هذه الفاتورة نهائياً؟')) {
             try {
-                await deleteDoc(doc(db, "contracts", docId)); // (تصحيح طفيف: تم إرسال معرّف الفاتورة الصحيح)
+                await deleteDoc(doc(db, "invoices", docId));
                 loadInvoicesFromFirestore();
             } catch (err) {
                 console.error("Error deleting:", err);
