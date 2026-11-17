@@ -1338,8 +1338,7 @@
         <div class="contract-signatures">
             <div class="signature-box">
                 <p class="fw-bold mb-1">توقيع الطرف الأول (OPTIWISE)</p>
-                <!-- صورة التوقيع sign.png -->
-                <img src="sign.png" alt="توقيع اوبتي وايز" class="contract-sign-img">
+                <img src="sign.png" alt="توقيع اوبتي وايز" class="contract-sign-img" onerror="this.onerror=null; this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';">
                 <p class="text-muted small mt-1">الإدارة التنفيذية</p>
             </div>
             <div class="signature-box">
@@ -1631,10 +1630,10 @@
                     <td class="text-light">${inv.notes || '-'}</td>
                     <td>
                         <div class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="viewFileDirectly(${index})">
+                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="openFileDirectly(${index})" title="فتح في المتصفح">
                                 <i class="fas ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> فتح
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-success" onclick="viewFileDirectly(${index})" title="تحميل">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFileDirectly(${index})" title="تحميل">
                                 <i class="fas fa-download"></i>
                             </button>
                         </div>
@@ -1650,6 +1649,65 @@
 
         } catch (err) {
             console.error("Error loading invoices:", err);
+        }
+    };
+
+    // 1. زر الفتح: يفتح الملف في المتصفح مباشرة
+    window.openFileDirectly = function(index) {
+        const inv = window.loadedInvoices[index];
+        if (!inv || !inv.imageUrl) {
+            alert('لا يوجد ملف مرفق.');
+            return;
+        }
+        try {
+            const parts = inv.imageUrl.split(';base64,');
+            const contentType = parts[0].split(':')[1] || 'application/pdf';
+            const raw = window.atob(parts[1]);
+            const rawLength = raw.length;
+            const uInt8Array = new Uint8Array(rawLength);
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            const blob = new Blob([uInt8Array], { type: contentType });
+            const blobUrl = URL.createObjectURL(blob);
+            
+            // فتح الملف في تبويب جديد بالمتصفح
+            window.open(blobUrl, '_blank');
+        } catch (e) {
+            alert('تعذر فتح الملف في المتصفح.');
+        }
+    };
+
+    // 2. زر التنزيل: يقوم بتحميل وتنزيل الملف على الجهاز
+    window.downloadFileDirectly = function(index) {
+        const inv = window.loadedInvoices[index];
+        if (!inv || !inv.imageUrl) {
+            alert('لا يوجد ملف مرفق.');
+            return;
+        }
+        try {
+            const parts = inv.imageUrl.split(';base64,');
+            const contentType = parts[0].split(':')[1] || 'application/pdf';
+            const raw = window.atob(parts[1]);
+            const rawLength = raw.length;
+            const uInt8Array = new Uint8Array(rawLength);
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            const blob = new Blob([uInt8Array], { type: contentType });
+            const blobUrl = URL.createObjectURL(blob);
+            
+            const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || inv.imageUrl.startsWith('data:application/pdf');
+            const ext = isPdf ? 'pdf' : 'png';
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `OPTIWISE_Invoice_${inv.invoiceNumber}.${ext}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            alert('تعذر تحميل الملف.');
         }
     };
 
@@ -1762,39 +1820,6 @@
                 console.error("Error deleting contract:", err);
                 alert('تعذر حذف العقد.');
             }
-        }
-    };
-
-    // تحميل وتنزيل ملف الفاتورة
-    window.viewFileDirectly = function(index) {
-        const inv = window.loadedInvoices[index];
-        if (!inv || !inv.imageUrl) {
-            alert('لا يوجد ملف مرفق.');
-            return;
-        }
-        try {
-            const parts = inv.imageUrl.split(';base64,');
-            const contentType = parts[0].split(':')[1] || 'application/pdf';
-            const raw = window.atob(parts[1]);
-            const rawLength = raw.length;
-            const uInt8Array = new Uint8Array(rawLength);
-            for (let i = 0; i < rawLength; ++i) {
-                uInt8Array[i] = raw.charCodeAt(i);
-            }
-            const blob = new Blob([uInt8Array], { type: contentType });
-            const blobUrl = URL.createObjectURL(blob);
-            
-            const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || inv.imageUrl.startsWith('data:application/pdf');
-            const ext = isPdf ? 'pdf' : 'png';
-
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = `OPTIWISE_Invoice_${inv.invoiceNumber}.${ext}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            alert('تعذر تحميل الملف.');
         }
     };
 
