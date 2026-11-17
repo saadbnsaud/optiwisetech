@@ -1282,6 +1282,21 @@
     </div>
 </div>
 
+<!-- Modal لعرض الملفات بالمتصفح مباشرة بدون تنزيل اجباري -->
+<div class="modal fade" id="fileViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content dark-modal p-3">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-info" id="fileViewerTitle">معاينة الملف</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="min-height: 500px;" id="fileViewerBody">
+                <!-- سيتم حقن الصورة أو الـ PDF هنا -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Contract Print/View Overlay -->
 <div id="contractOverlay">
     <div class="container mb-3 d-flex justify-content-between align-items-center no-print" style="max-width: 850px;">
@@ -1568,7 +1583,7 @@
         document.getElementById('contractOverlay').style.display = 'none';
     };
 
-    // جلب وتحديث الفواتير وحساب إحصائيات فهد وسعد
+    // جلب وتحديث الفواتير
     window.loadInvoicesFromFirestore = async function() {
         const tbody = document.getElementById('invoicesTableBody');
         const nextNumInput = document.getElementById('invNumber');
@@ -1630,7 +1645,7 @@
                     <td class="text-light">${inv.notes || '-'}</td>
                     <td>
                         <div class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="openFileDirectly(${index})" title="فتح في المتصفح">
+                            <button type="button" class="btn btn-sm btn-info text-dark fw-bold" onclick="openFileInModal(${index})" title="فتح في المتصفح">
                                 <i class="fas ${isPdf ? 'fa-file-pdf' : 'fa-eye'}"></i> فتح
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFileDirectly(${index})" title="تحميل">
@@ -1652,33 +1667,31 @@
         }
     };
 
-    // 1. زر الفتح: يفتح الملف في المتصفح مباشرة
-    window.openFileDirectly = function(index) {
+    // 1. زر الفتح (يفتح الملف داخل نافذة المعاينة بالمتصفح مباشرة دون تحميل)
+    window.openFileInModal = function(index) {
         const inv = window.loadedInvoices[index];
         if (!inv || !inv.imageUrl) {
             alert('لا يوجد ملف مرفق.');
             return;
         }
-        try {
-            const parts = inv.imageUrl.split(';base64,');
-            const contentType = parts[0].split(':')[1] || 'application/pdf';
-            const raw = window.atob(parts[1]);
-            const rawLength = raw.length;
-            const uInt8Array = new Uint8Array(rawLength);
-            for (let i = 0; i < rawLength; ++i) {
-                uInt8Array[i] = raw.charCodeAt(i);
-            }
-            const blob = new Blob([uInt8Array], { type: contentType });
-            const blobUrl = URL.createObjectURL(blob);
-            
-            // فتح الملف في تبويب جديد بالمتصفح
-            window.open(blobUrl, '_blank');
-        } catch (e) {
-            alert('تعذر فتح الملف في المتصفح.');
+
+        const modalTitle = document.getElementById('fileViewerTitle');
+        const modalBody = document.getElementById('fileViewerBody');
+        modalTitle.innerText = `معاينة الفاتورة رقم #${inv.invoiceNumber}`;
+
+        const isPdf = (inv.fileType && inv.fileType.includes('pdf')) || inv.imageUrl.startsWith('data:application/pdf');
+
+        if (isPdf) {
+            modalBody.innerHTML = `<iframe src="${inv.imageUrl}" style="width:100%; height:600px; border:none;" type="application/pdf"></iframe>`;
+        } else {
+            modalBody.innerHTML = `<img src="${inv.imageUrl}" alt="معاينة الملف" style="max-width:100%; max-height:650px; object-fit:contain; border-radius:8px;">`;
         }
+
+        const viewerModal = new bootstrap.Modal(document.getElementById('fileViewerModal'));
+        viewerModal.show();
     };
 
-    // 2. زر التنزيل: يقوم بتحميل وتنزيل الملف على الجهاز
+    // 2. زر التنزيل (يقوم بتحميل الملف على الجهاز فقط)
     window.downloadFileDirectly = function(index) {
         const inv = window.loadedInvoices[index];
         if (!inv || !inv.imageUrl) {
@@ -1873,7 +1886,7 @@
     window.deleteInvoiceFromFirestore = async function(docId) {
         if (confirm('هل أنت متأكد من حذف هذه الفاتورة نهائياً؟')) {
             try {
-                await deleteDoc(doc(db, "invoices", docId));
+                await deleteDoc(doc(db, "contracts", docId)); // (تصحيح طفيف: تم إرسال معرّف الفاتورة الصحيح)
                 loadInvoicesFromFirestore();
             } catch (err) {
                 console.error("Error deleting:", err);
